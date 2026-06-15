@@ -17,6 +17,7 @@
       --warning: #fff2cf;
       --success: #e8f5e9;
       --danger: #fff0f0;
+      --blue: #eef4ff;
       --shadow: 0 12px 35px rgba(0,0,0,0.08);
       --radius: 20px;
     }
@@ -31,90 +32,53 @@
       line-height: 1.55;
     }
 
-    header {
-      padding: 34px 20px 14px;
-      text-align: center;
-    }
+    header { padding: 34px 20px 14px; text-align: center; }
 
     .logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 13px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(255,255,255,0.75);
-      font-size: 14px;
-      color: var(--muted);
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px;
+      background: rgba(255,255,255,0.75); font-size: 14px; color: var(--muted);
     }
 
     h1 {
       margin: 20px auto 10px;
       max-width: 620px;
-      font-size: clamp(30px, 5.8vw, 48px);
-      line-height: 1.14;
-      letter-spacing: -1.1px;
-      font-weight: 750;
+      font-size: clamp(30px, 5.6vw, 46px);
+      line-height: 1.12;
+      letter-spacing: -1px;
+      font-weight: 680;
     }
 
-    .lead {
-      margin: 0 auto;
-      max-width: 680px;
-      color: var(--muted);
-      font-size: 18px;
-    }
+    .lead { margin: 0 auto; max-width: 680px; color: var(--muted); font-size: 18px; }
 
     .wrap {
       width: min(1120px, calc(100% - 32px));
       margin: 28px auto 70px;
       display: grid;
-      grid-template-columns: 1fr 0.9fr;
+      grid-template-columns: 1fr 0.95fr;
       gap: 18px;
     }
 
     .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 22px;
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 22px;
     }
 
-    .section-title {
-      margin: 0 0 14px;
-      font-size: 22px;
-      letter-spacing: -0.5px;
-    }
+    .section-title { margin: 0 0 14px; font-size: 22px; letter-spacing: -0.5px; }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-    label {
-      display: block;
-      font-weight: 800;
-      font-size: 14px;
-      margin-bottom: 7px;
-    }
+    label { display: block; font-weight: 760; font-size: 14px; margin-bottom: 7px; }
 
     input, select {
-      width: 100%;
-      min-height: 50px;
-      padding: 12px 13px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: #fff;
-      font-family: inherit;
-      font-size: 16px;
-      color: var(--text);
-      appearance: none;
+      width: 100%; min-height: 50px; padding: 12px 13px; border: 1px solid var(--line);
+      border-radius: 14px; background: #fff; font-family: inherit; font-size: 16px;
+      color: var(--text); appearance: none;
     }
 
     input.time-input {
-      font-size: 17px;
-      font-weight: 650;
+      font-size: 16px;
+      font-weight: 500;
       letter-spacing: 0;
       font-variant-numeric: tabular-nums;
     }
@@ -124,214 +88,81 @@
     select {
       background-image: linear-gradient(45deg, transparent 50%, #777 50%), linear-gradient(135deg, #777 50%, transparent 50%);
       background-position: calc(100% - 18px) 21px, calc(100% - 12px) 21px;
-      background-size: 6px 6px, 6px 6px;
-      background-repeat: no-repeat;
-      padding-right: 34px;
+      background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; padding-right: 34px;
     }
 
-    input:focus, select:focus {
-      outline: 2px solid #222222;
-      outline-offset: 1px;
-    }
+    input:focus, select:focus { outline: 2px solid #222222; outline-offset: 1px; }
 
     .full { grid-column: 1 / -1; }
+    .small-text { margin: 7px 0 0; color: var(--muted); font-size: 13px; }
 
-    .small-text {
-      margin: 7px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    details {
-      margin-top: 16px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: #faf9f5;
-      padding: 0;
-      overflow: hidden;
-    }
-
-    summary {
-      cursor: pointer;
-      padding: 14px 15px;
-      font-weight: 850;
-      list-style: none;
-    }
-
+    details { margin-top: 16px; border: 1px solid var(--line); border-radius: 16px; background: #faf9f5; padding: 0; overflow: hidden; }
+    summary { cursor: pointer; padding: 14px 15px; font-weight: 800; list-style: none; }
     summary::-webkit-details-marker { display: none; }
     summary::after { content: "+"; float: right; color: var(--muted); }
     details[open] summary::after { content: "-"; }
+    .details-body { padding: 0 15px 15px; }
 
-    .details-body {
-      padding: 0 15px 15px;
-    }
+    .actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
 
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 18px;
-      flex-wrap: wrap;
-    }
+    button { border: 0; border-radius: 14px; padding: 13px 18px; font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit; }
+    .primary { background: var(--main); color: #fff; flex: 1; min-width: 180px; }
+    .secondary { background: var(--soft); color: var(--text); }
 
-    button {
-      border: 0;
-      border-radius: 14px;
-      padding: 13px 18px;
-      font-size: 16px;
-      font-weight: 850;
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    .primary {
-      background: var(--main);
-      color: #fff;
-      flex: 1;
-      min-width: 180px;
-    }
-
-    .secondary {
-      background: var(--soft);
-      color: var(--text);
-    }
-
-    .result {
-      min-height: 430px;
-    }
-
+    .result { min-height: 430px; }
     .placeholder {
-      height: 100%;
-      min-height: 380px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: var(--muted);
-      background: #faf9f5;
-      border: 1px dashed var(--line);
-      border-radius: 18px;
-      padding: 24px;
+      height: 100%; min-height: 380px; display: flex; align-items: center; justify-content: center;
+      text-align: center; color: var(--muted); background: #faf9f5; border: 1px dashed var(--line);
+      border-radius: 18px; padding: 24px;
     }
 
-    .status-box {
-      padding: 16px;
-      border-radius: 17px;
-      background: var(--soft);
-      margin-bottom: 14px;
-    }
-
+    .status-box { padding: 16px; border-radius: 17px; background: var(--soft); margin-bottom: 14px; }
     .status-box.good { background: var(--success); }
     .status-box.warn { background: var(--warning); }
     .status-box.danger { background: var(--danger); }
-
-    .status-box h3 {
-      margin: 0 0 5px;
-      font-size: 20px;
-    }
-
+    .status-box.blue { background: var(--blue); }
+    .status-box h3 { margin: 0 0 5px; font-size: 20px; }
     .status-box p { margin: 0; color: #333; }
 
-    .result-list {
-      display: grid;
-      gap: 10px;
-      margin: 14px 0;
-    }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0 0; }
+    .tag { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 999px; background: rgba(255,255,255,.72); border: 1px solid rgba(0,0,0,.06); font-size: 12px; color: #333; }
 
-    .result-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 13px 14px;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: #fff;
-    }
+    .score-row { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
+    .score-label { min-width: 72px; font-size: 13px; color: #444; font-weight: 740; }
+    .score-bar { flex: 1; height: 10px; border-radius: 999px; background: rgba(255,255,255,.75); overflow: hidden; border: 1px solid rgba(0,0,0,.06); }
+    .score-fill { height: 100%; width: 50%; background: #222; border-radius: 999px; }
+    .score-num { min-width: 48px; text-align: right; font-weight: 820; font-variant-numeric: tabular-nums; }
 
-    .result-item span:first-child {
-      color: var(--muted);
-    }
+    .result-list { display: grid; gap: 10px; margin: 14px 0; }
+    .result-item { display: flex; justify-content: space-between; gap: 16px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
+    .result-item span:first-child { color: var(--muted); }
+    .result-item strong { text-align: right; font-variant-numeric: tabular-nums; }
 
-    .result-item strong {
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .guide {
-      padding: 16px;
-      border-radius: 16px;
-      background: #faf9f5;
-      border: 1px solid var(--line);
-      margin-top: 12px;
-    }
-
+    .guide { padding: 16px; border-radius: 16px; background: #faf9f5; border: 1px solid var(--line); margin-top: 12px; }
     .guide h4 { margin: 0 0 8px; }
     .guide ul { margin: 0; padding-left: 18px; }
     .guide li { margin: 6px 0; }
 
-    .premium, .adbox, .notice {
-      width: min(1120px, calc(100% - 32px));
-      margin: 0 auto 18px;
-    }
+    .return-box { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-top: 12px; }
+    .return-box strong { display: block; margin-bottom: 4px; }
 
-    .premium-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 14px;
-    }
+    .preview-grid { display: grid; gap: 8px; margin-top: 10px; }
+    .preview-day { display: grid; grid-template-columns: 70px 1fr; gap: 10px; padding: 10px 12px; border-radius: 13px; background: #fff; border: 1px solid var(--line); }
+    .preview-day b { font-variant-numeric: tabular-nums; }
+    .locked { opacity: .72; }
 
-    .price-card {
-      border: 1px solid var(--line);
-      border-radius: 17px;
-      padding: 16px;
-      background: #fff;
-    }
-
+    .premium, .adbox, .notice { width: min(1120px, calc(100% - 32px)); margin: 0 auto 18px; }
+    .premium-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+    .price-card { border: 1px solid var(--line); border-radius: 17px; padding: 16px; background: #fff; }
     .price-card h3 { margin: 0 0 8px; }
-    .price { font-size: 28px; font-weight: 900; margin: 0; }
+    .price { font-size: 28px; font-weight: 820; margin: 0; }
     .price small { font-size: 13px; color: var(--muted); font-weight: 600; }
 
-    .ad-placeholder {
-      height: 90px;
-      border: 1px dashed #c7c0b4;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      background: #fff;
-      text-align: center;
-      padding: 12px;
-    }
+    .ad-placeholder { height: 90px; border: 1px dashed #c7c0b4; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: var(--muted); background: #fff; text-align: center; padding: 12px; }
+    .notice .card { box-shadow: none; background: #fffef9; font-size: 14px; color: var(--muted); }
 
-    .notice .card {
-      box-shadow: none;
-      background: #fffef9;
-      font-size: 14px;
-      color: var(--muted);
-    }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      padding: 20px 16px 36px;
-    }
-
-    .copy-ok {
-      font-size: 13px;
-      color: var(--muted);
-      align-self: center;
-      display: none;
-    }
-
-    .error-text {
-      display: none;
-      margin-top: 8px;
-      color: #b42318;
-      font-size: 13px;
-      font-weight: 700;
-    }
+    footer { text-align: center; color: var(--muted); font-size: 13px; padding: 20px 16px 36px; }
+    .error-text { display: none; margin-top: 8px; color: #b42318; font-size: 13px; font-weight: 700; }
 
     @media (max-width: 860px) {
       .wrap { grid-template-columns: 1fr; }
@@ -341,6 +172,7 @@
       .result { min-height: auto; }
       header { padding-top: 26px; }
       .card { padding: 18px; }
+      .preview-day { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -432,45 +264,39 @@
     </section>
 
     <section class="adbox">
-      <div class="ad-placeholder">
-        광고 영역 자리입니다. 나중에 Google AdSense 승인 후 광고 코드를 넣는 위치입니다.
-      </div>
+      <div class="ad-placeholder">광고 영역 자리입니다. 나중에 Google AdSense 승인 후 광고 코드를 넣는 위치입니다.</div>
     </section>
 
     <section class="premium">
       <div class="card">
-        <h2 class="section-title">프리미엄 예정</h2>
-        <p class="small-text">무료는 오늘 계산만 제공합니다. 광고를 보면 1회 상세 플랜을 이용할 수 있고, 프리미엄은 기록 저장과 7일 복구 플랜을 제공합니다.</p>
+        <h2 class="section-title">리듬 리셋 옵션</h2>
+        <p class="small-text">월정액보다 필요할 때만 쓰는 구조입니다. 늦잠, 야근, 여행, 시험 전후처럼 리듬이 흔들렸을 때 오늘치 계산은 무료로 쓰고, 짧은 복구 플랜만 선택할 수 있습니다.</p>
         <div class="premium-grid">
           <div class="price-card">
-            <h3>1회 상세 플랜</h3>
+            <h3>오늘 상세 분석</h3>
             <p class="price">광고 보기</p>
-            <p class="small-text">광고 시청 후 오늘 상태를 더 자세히 분석</p>
+            <p class="small-text">광고 시청 후 오늘 조정 포인트를 더 길게 확인</p>
           </div>
           <div class="price-card">
-            <h3>7일 복구 플랜</h3>
+            <h3>3일 긴급 리셋</h3>
             <p class="price">900원</p>
-            <p class="small-text">7일간 단계별 기상 루틴</p>
+            <p class="small-text">Day 1~3 기상 목표와 실패 시 수정 플랜</p>
           </div>
           <div class="price-card">
-            <h3>월정액</h3>
-            <p class="price">2,900원 <small>/월</small></p>
-            <p class="small-text">기록 저장, 7일 플랜 반복 이용, AI 코멘트</p>
+            <h3>리셋 5회권</h3>
+            <p class="price">2,900원</p>
+            <p class="small-text">구독 아님. 필요할 때 5번 쓰는 방식</p>
           </div>
         </div>
       </div>
     </section>
 
     <section class="notice">
-      <div class="card">
-        이 서비스는 수면장애, 불면증, 수면무호흡 등 질환을 진단하거나 치료하지 않습니다. 심한 불면, 과도한 주간 졸림, 코골이·호흡 멈춤, 우울감 등이 지속되면 의료기관 상담이 필요합니다.
-      </div>
+      <div class="card">이 서비스는 수면장애, 불면증, 수면무호흡 등 질환을 진단하거나 치료하지 않습니다. 심한 불면, 과도한 주간 졸림, 코골이·호흡 멈춤, 우울감 등이 지속되면 의료기관 상담이 필요합니다.</div>
     </section>
   </main>
 
-  <footer>
-    © <span id="year"></span> 리듬리셋. 무료 수면 리듬 계산기.
-  </footer>
+  <footer>© <span id="year"></span> 리듬리셋. 무료 수면 리듬 계산기.</footer>
 
   <script>
     const form = document.getElementById('rhythmForm');
@@ -526,6 +352,23 @@
       return d;
     }
 
+    function sleepDuration(sleep, wake) {
+      let d = wake - sleep;
+      if (d <= 0) d += 1440;
+      return d;
+    }
+
+    function circularDistance(a, b) {
+      let d = a - b;
+      if (d > 720) d -= 1440;
+      if (d < -720) d += 1440;
+      return d;
+    }
+
+    function isDawnSleep(sleep) { return sleep >= 0 && sleep <= 330; }
+    function isVeryLateSleep(sleep) { return sleep >= 180 && sleep <= 420; }
+    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+
     function minutesText(min) {
       const abs = Math.abs(Math.round(min));
       const h = Math.floor(abs / 60);
@@ -535,124 +378,334 @@
       return `${h}시간 ${m}분`;
     }
 
-    function classify(delay) {
-      if (delay <= 30 && delay >= -30) return { title: '목표 시간에 가까운 상태', cls: 'good' };
-      if (delay > 30 && delay <= 120) return { title: '리듬이 조금 늦어진 상태', cls: 'warn' };
-      if (delay > 120) return { title: '리듬이 많이 늦어진 상태', cls: 'danger' };
-      return { title: '목표보다 일찍 깬 상태', cls: 'good' };
+    function scoreRhythm(delay, duration, nap, alcohol, sleep, important) {
+      let score = 94;
+      score -= Math.min(42, Math.abs(delay) / 4);
+      if (duration < 300) score -= 26;
+      else if (duration < 360) score -= 18;
+      else if (duration < 420) score -= 8;
+      if (duration > 660) score -= 18;
+      else if (duration > 600) score -= 10;
+      if (isVeryLateSleep(sleep)) score -= 8;
+      if (nap === 'long') score -= 7;
+      if (nap === 'late') score -= 11;
+      if (alcohol === 'yes') score -= 8;
+      if (important && Math.abs(delay) > 90) score -= 5;
+      return Math.round(clamp(score, 18, 96));
+    }
+
+    function scenarioFrom({ delay, duration, important, nap, alcohol, sleep, caffeine, targetWake }) {
+      if (important && duration < 330) return { key: 'urgentDebt', title: '내일 일정 + 수면부족형', cls: 'danger' };
+      if (important && delay > 240) return { key: 'urgentHeavy', title: '내일 일정 + 심한 지연형', cls: 'danger' };
+      if (important && delay > 45) return { key: 'urgent', title: '내일 강제 기상형', cls: 'blue' };
+      if (alcohol === 'yes' && delay > 60) return { key: 'alcoholDelay', title: '음주 후 리듬 밀림형', cls: 'warn' };
+      if (alcohol === 'yes') return { key: 'alcoholRecovery', title: '음주 후 회복형', cls: 'blue' };
+      if (nap === 'late' && delay > 30) return { key: 'lateNapDelay', title: '늦은 낮잠 영향형', cls: 'warn' };
+      if (duration < 300) return { key: 'extremeDebt', title: '심한 수면부족형', cls: 'danger' };
+      if (duration < 360) return { key: 'debt', title: '수면 부족형', cls: 'danger' };
+      if (duration > 690 && delay > 120) return { key: 'extremeOversleep', title: '과수면 + 늦잠 고착형', cls: 'danger' };
+      if (duration >= 600 && delay > 45) return { key: 'oversleep', title: '과수면·늦잠형', cls: 'warn' };
+      if (delay > 360) return { key: 'extremeDelay', title: '극심한 리듬 지연형', cls: 'danger' };
+      if (delay > 240) return { key: 'heavyDelay', title: '심한 리듬 지연형', cls: 'danger' };
+      if (delay > 120) return { key: 'moderateDelay', title: '중간 지연형', cls: 'warn' };
+      if (delay > 30) return { key: 'mildDelay', title: '가벼운 지연형', cls: 'warn' };
+      if (delay < -180) return { key: 'tooEarly', title: '너무 이른 기상형', cls: 'blue' };
+      if (delay < -30) return { key: 'early', title: '리듬이 앞당겨진 상태', cls: 'blue' };
+      if (isDawnSleep(sleep) && targetWake < 540) return { key: 'dawnStable', title: '새벽 취침 유지형', cls: 'warn' };
+      return { key: 'stable', title: '유지형', cls: 'good' };
+    }
+
+    function buildTags({ delay, duration, important, nap, alcohol, sleep, caffeine, caffeineCut }) {
+      const tags = [];
+      if (delay > 0) tags.push(`목표보다 ${minutesText(delay)} 늦음`);
+      else if (delay < 0) tags.push(`목표보다 ${minutesText(delay)} 빠름`);
+      else tags.push('목표 기상 일치');
+      tags.push(`수면 ${minutesText(duration)}`);
+      if (isVeryLateSleep(sleep)) tags.push('새벽 취침');
+      if (duration < 360) tags.push('수면부족');
+      if (duration > 600) tags.push('긴 수면');
+      if (important) tags.push('내일 일정 고정');
+      if (nap === 'short') tags.push('짧은 낮잠');
+      if (nap === 'long') tags.push('긴 낮잠');
+      if (nap === 'late') tags.push('늦은 낮잠');
+      if (alcohol === 'yes') tags.push('음주 영향');
+      if (caffeine !== null && circularDistance(caffeine, caffeineCut) > 0) tags.push('늦은 카페인');
+      return tags.slice(0, 6);
+    }
+
+    function buildPreviewDays(targetWake, recommendedWake, scenarioKey) {
+      const d1 = recommendedWake;
+      let d2 = targetWake;
+      let d3 = targetWake;
+
+      if (['extremeDelay', 'heavyDelay', 'urgentHeavy', 'extremeOversleep'].includes(scenarioKey)) {
+        d2 = Math.max(targetWake, recommendedWake - 75);
+        d3 = Math.max(targetWake, d2 - 60);
+      } else if (['moderateDelay', 'oversleep', 'lateNapDelay', 'alcoholDelay'].includes(scenarioKey)) {
+        d2 = Math.max(targetWake, recommendedWake - 45);
+        d3 = targetWake;
+      } else if (['mildDelay', 'debt', 'extremeDebt'].includes(scenarioKey)) {
+        d2 = Math.max(targetWake, recommendedWake - 30);
+        d3 = targetWake;
+      } else if (['urgent', 'urgentDebt'].includes(scenarioKey)) {
+        d2 = targetWake + 30;
+        d3 = targetWake;
+      } else if (['early', 'tooEarly'].includes(scenarioKey)) {
+        d2 = targetWake;
+        d3 = targetWake;
+      } else {
+        d2 = targetWake;
+        d3 = targetWake;
+      }
+
+      return [
+        ['Day 1', `${fmt(d1)} 기상`],
+        ['Day 2', `${fmt(d2)} 기상`],
+        ['Day 3', `${fmt(d3)} 고정 또는 재조정`],
+        ['실패 시', '3일 긴급 리셋에서 다음 목표 재계산']
+      ];
+    }
+
+    function addUnique(points, text) {
+      if (text && !points.includes(text)) points.push(text);
     }
 
     function buildPlan(data) {
+      const sleep = parseTime(data.sleepTime);
       const wake = parseTime(data.wakeTime);
       const targetWake = parseTime(data.targetWake);
       const usualSleep = parseTime(data.usualSleep) ?? 60;
       const caffeine = parseTime(data.caffeineTime);
-
+      const duration = sleepDuration(sleep, wake);
       const delay = diffWake(wake, targetWake);
       const important = data.important === 'yes';
-      const alcohol = data.alcohol === 'yes';
+      const alcohol = data.alcohol;
       const nap = data.nap;
 
-      let recommendedWake;
-      if (important) {
-        recommendedWake = targetWake;
-      } else if (delay > 180) {
-        recommendedWake = targetWake + 120;
-      } else if (delay > 120) {
-        recommendedWake = targetWake + 90;
-      } else if (delay > 60) {
-        recommendedWake = targetWake + 45;
-      } else {
-        recommendedWake = targetWake;
-      }
+      const scenario = scenarioFrom({ delay, duration, important, nap, alcohol, sleep, caffeine, targetWake });
+
+      let recommendedWake = targetWake;
+      if (scenario.key === 'extremeDelay') recommendedWake = targetWake + 180;
+      if (scenario.key === 'heavyDelay') recommendedWake = targetWake + 120;
+      if (scenario.key === 'urgentHeavy') recommendedWake = targetWake;
+      if (scenario.key === 'moderateDelay') recommendedWake = targetWake + 60;
+      if (scenario.key === 'mildDelay') recommendedWake = targetWake + 30;
+      if (scenario.key === 'oversleep') recommendedWake = targetWake + 45;
+      if (scenario.key === 'extremeOversleep') recommendedWake = targetWake + 75;
+      if (scenario.key === 'lateNapDelay') recommendedWake = targetWake + 45;
+      if (scenario.key === 'alcoholDelay') recommendedWake = targetWake + 45;
+      if (scenario.key === 'alcoholRecovery') recommendedWake = targetWake + 15;
+      if (scenario.key === 'debt') recommendedWake = important ? targetWake : targetWake + 30;
+      if (scenario.key === 'extremeDebt') recommendedWake = important ? targetWake : targetWake + 60;
+      if (scenario.key === 'urgent' || scenario.key === 'urgentDebt') recommendedWake = targetWake;
+      if (scenario.key === 'tooEarly') recommendedWake = targetWake;
+      if (scenario.key === 'early') recommendedWake = targetWake;
+      if (scenario.key === 'stable' || scenario.key === 'dawnStable') recommendedWake = targetWake;
 
       let targetSleepDuration = 450;
-      if (alcohol) targetSleepDuration = 480;
-      if (important && delay > 120) targetSleepDuration = 420;
+      if (['debt', 'urgentDebt'].includes(scenario.key)) targetSleepDuration = 510;
+      if (scenario.key === 'extremeDebt') targetSleepDuration = 540;
+      if (['urgent', 'urgentHeavy'].includes(scenario.key)) targetSleepDuration = 420;
+      if (['oversleep', 'extremeOversleep'].includes(scenario.key)) targetSleepDuration = 420;
+      if (alcohol === 'yes') targetSleepDuration += 30;
 
       let recommendedBed = recommendedWake - targetSleepDuration;
-
-      const usualGap = recommendedBed - usualSleep;
-      if (!important && usualGap < -120) recommendedBed = usualSleep - 60;
+      const usualGap = circularDistance(recommendedBed, usualSleep);
+      if (!important && usualGap < -120 && !['oversleep', 'extremeOversleep', 'tooEarly'].includes(scenario.key)) recommendedBed = usualSleep - 60;
       if (nap === 'long') recommendedBed += 30;
       if (nap === 'late') recommendedBed += 60;
-      if (alcohol) recommendedBed += 30;
+      if (alcohol === 'yes' && !['debt', 'extremeDebt', 'urgentDebt'].includes(scenario.key)) recommendedBed += 20;
+
+      const caffeineCut = Math.min(recommendedBed - 480, 17 * 60);
+      const lateCaffeine = caffeine !== null && circularDistance(caffeine, caffeineCut) > 0;
+      if (lateCaffeine && !important) recommendedBed += 20;
 
       const alarm1 = recommendedWake - 10;
       const alarm2 = recommendedWake;
       const alarm3 = recommendedWake + 10;
-      const caffeineCut = Math.min(recommendedBed - 480, 17 * 60);
       const lightStart = recommendedWake;
       const lightEnd = recommendedWake + 30;
+      const score = scoreRhythm(delay, duration, nap, alcohol, sleep, important);
+      const tags = buildTags({ delay, duration, important, nap, alcohol, sleep, caffeine, caffeineCut });
 
-      let napGuide = '가능하면 생략';
-      if (delay <= 30 && nap === 'none') napGuide = '졸리면 15시 전 20분까지만';
-      if (important) napGuide = '15시 전 15~20분까지만 허용';
+      let stateText = '';
+      if (delay > 0) stateText = `오늘 기상은 목표보다 약 ${minutesText(delay)} 늦습니다. 실제 수면시간은 약 ${minutesText(duration)}입니다.`;
+      else if (delay < 0) stateText = `오늘 기상은 목표보다 약 ${minutesText(delay)} 빠릅니다. 실제 수면시간은 약 ${minutesText(duration)}입니다.`;
+      else stateText = `오늘 기상은 목표와 같습니다. 실제 수면시간은 약 ${minutesText(duration)}입니다.`;
+
+      const mainAdviceMap = {
+        stable: '복구보다 유지가 핵심입니다. 돈을 내고 플랜을 볼 상황은 아닙니다.',
+        dawnStable: '기상은 맞았지만 취침이 늦은 편입니다. 당장은 유지하되 새벽 취침이 반복되는지 확인해야 합니다.',
+        mildDelay: '가벼운 지연입니다. 오늘은 크게 고치기보다 30분 단위로만 당기는 쪽이 현실적입니다.',
+        moderateDelay: '중간 정도 밀렸습니다. 당장 완전 복구보다 내일 한 번 성공할 수 있는 기상선을 잡아야 합니다.',
+        heavyDelay: '리듬이 꽤 밀렸습니다. 하루 만에 정상화하려 하면 실패 가능성이 높습니다.',
+        extremeDelay: '리듬이 크게 무너진 상태입니다. 오늘은 응급 복구선부터 잡는 게 맞습니다.',
+        oversleep: '오래 잤는데도 늦게 일어난 상태입니다. 오늘 밤에는 수면 압력이 약할 수 있습니다.',
+        extremeOversleep: '늦잠과 과수면이 같이 나온 상태입니다. 취침보다 기상 고정이 우선입니다.',
+        debt: '수면량이 부족합니다. 리듬을 당기는 것보다 회복과 기상 성공의 균형이 중요합니다.',
+        extremeDebt: '수면부족이 큽니다. 오늘은 정상화보다 무너지지 않는 플랜이 먼저입니다.',
+        urgent: '내일 일정이 있으므로 컨디션보다 목표 기상 성공이 우선입니다.',
+        urgentHeavy: '내일 일정은 있는데 리듬이 많이 밀렸습니다. 완벽한 수면보다 강제 기상 플랜이 필요합니다.',
+        urgentDebt: '내일 일정과 수면부족이 겹쳤습니다. 오늘은 최소 피해 플랜으로 가야 합니다.',
+        early: '목표보다 빠르게 일어난 상태입니다. 더 당기지 말고 목표 시간대에 안정시키는 쪽이 좋습니다.',
+        tooEarly: '너무 일찍 깬 상태입니다. 이 패턴이 반복되면 새벽 각성이 생길 수 있습니다.',
+        lateNapDelay: '늦은 낮잠 때문에 밤 취침이 밀릴 가능성이 큽니다. 오늘은 보수적으로 봐야 합니다.',
+        alcoholDelay: '음주 영향으로 수면 질과 기상 시간이 같이 흔들렸을 가능성이 있습니다.',
+        alcoholRecovery: '기상은 크게 무너지지 않았지만 음주 후 회복 변수가 있습니다.'
+      };
 
       let caffeineGuide = '선택 입력 없음';
-      let caffeineWarning = '';
-      if (caffeine !== null) {
-        caffeineGuide = `${fmt(caffeineCut)} 이후 피하기`;
-        const lateCaffeine = diffWake(caffeine, caffeineCut) > 0;
-        if (lateCaffeine) caffeineWarning = '마지막 카페인 시간이 늦은 편이라 추천 취침시간을 너무 이르게 잡지 않았습니다.';
-      }
+      if (caffeine !== null) caffeineGuide = `${fmt(caffeineCut)} 이후 피하기`;
 
-      const status = classify(delay);
+      let napGuide = '가능하면 생략';
+      if (['debt', 'extremeDebt', 'urgentDebt'].includes(scenario.key)) napGuide = '필요하면 15시 전 20분만';
+      if (scenario.key === 'stable') napGuide = '졸리면 15시 전 20분까지만';
+      if (important) napGuide = '15시 전 15~20분까지만 허용';
+      if (['oversleep', 'extremeOversleep'].includes(scenario.key)) napGuide = '오늘은 피하는 편이 좋음';
+      if (nap === 'late' || nap === 'long') napGuide = '오늘 추가 낮잠은 피하기';
 
-      let stateText;
-      if (delay > 0) stateText = `오늘 기상 시간이 목표보다 약 ${minutesText(delay)} 늦습니다.`;
-      else if (delay < 0) stateText = `오늘 기상 시간이 목표보다 약 ${minutesText(delay)} 빠릅니다.`;
-      else stateText = '오늘 기상 시간이 목표와 같습니다.';
+      const points = [];
+      const bedText = fmt(recommendedBed);
+      const wakeText = fmt(recommendedWake);
 
-      let mainAdvice = '오늘은 잠드는 시간보다 내일 기상 시간을 먼저 고정하는 편이 낫습니다.';
-      if (delay > 120 && !important) mainAdvice = '오늘 한 번에 원래 리듬으로 돌리기보다, 기상 시간을 1~2시간만 먼저 당기는 편이 현실적입니다.';
-      if (important) mainAdvice = '내일 일정이 있으므로 수면시간을 완벽히 채우는 것보다 목표 기상 성공을 우선합니다.';
-      if (alcohol) mainAdvice += ' 술을 마신 날은 수면 질이 떨어질 수 있어 기상 난도가 올라갈 수 있습니다.';
+      const scenarioPoints = {
+        stable: [
+          `오늘은 ${fmt(targetWake)} 기상 유지가 목표입니다. 이미 맞은 리듬을 더 건드릴 필요는 없습니다.`,
+          '유료 플랜보다 내일 같은 시간에 한 번 더 일어나는지가 더 중요합니다.',
+          '주말이나 쉬는 날에도 늦잠을 1시간 이내로 제한하면 유지에 유리합니다.'
+        ],
+        dawnStable: [
+          `기상은 맞았지만 ${fmt(sleep)} 취침이라 새벽 취침 습관이 남아 있습니다.`,
+          `오늘은 ${bedText} 전후 취침을 목표로 잡고, 기상은 ${fmt(targetWake)}로 유지하세요.`,
+          '겉으로는 성공처럼 보여도 새벽 취침이 반복되면 다음 휴무일에 늦잠으로 튈 가능성이 있습니다.'
+        ],
+        mildDelay: [
+          `오늘은 ${bedText} 전후 취침, ${wakeText} 기상을 목표로 잡으세요.`,
+          '30분 정도의 지연은 생활 오차 범위입니다. 과하게 조정하면 오히려 뒤척일 수 있습니다.',
+          `내일 성공하면 다음날 ${fmt(Math.max(targetWake, recommendedWake - 30))}까지 당기면 됩니다.`
+        ],
+        moderateDelay: [
+          `오늘은 목표 기상까지 한 번에 가지 말고 ${wakeText} 기상부터 성공시키세요.`,
+          `추천 취침 ${bedText}보다 너무 일찍 누우면 잠이 안 와서 오히려 실패할 수 있습니다.`,
+          '내일 실제 기상시간이 30분 이상 밀리면 복구 속도를 늦춰야 합니다.'
+        ],
+        heavyDelay: [
+          `오늘 한 번에 ${fmt(targetWake)}로 당기지 말고, ${wakeText} 기상부터 잡으세요.`,
+          `취침은 ${bedText} 전후가 현실적입니다. 억지로 00시 취침 같은 목표를 잡지 마세요.`,
+          '이 상태는 1일 완전 복구보다 2~3일 응급 리셋이 더 맞습니다.'
+        ],
+        extremeDelay: [
+          `현재는 정상화가 아니라 응급 복구 상태입니다. 내일 ${wakeText} 기상만 성공해도 1차 성공입니다.`,
+          '오늘 밤에 일찍 자려고 하기보다, 내일 침대에서 빠져나오는 시간을 먼저 정해야 합니다.',
+          `목표 ${fmt(targetWake)}까지는 최소 2번의 중간 기상 목표가 필요합니다.`
+        ],
+        oversleep: [
+          `오늘은 낮잠을 피하고 ${wakeText} 기상 기준으로 밤 수면 압력을 다시 쌓으세요.`,
+          `오래 잔 다음 날은 ${bedText}보다 일찍 누워도 바로 잠들기 어려울 수 있습니다.`,
+          '내일도 늦잠이 반복되면 취침 시간이 아니라 기상 시간부터 고정해야 합니다.'
+        ],
+        extremeOversleep: [
+          '수면시간이 너무 길고 기상도 밀려 있어, 오늘은 잠을 더 보충하는 날이 아닙니다.',
+          `추가 낮잠 없이 버티고 ${bedText} 전후 취침을 목표로 잡으세요.`,
+          `내일 ${wakeText} 기상을 못 지키면 리듬이 다시 오후 쪽으로 밀릴 가능성이 큽니다.`
+        ],
+        debt: [
+          `수면시간이 약 ${minutesText(duration)}라 오늘은 리듬 당기기보다 수면량 회복이 먼저입니다.`,
+          `알람은 ${fmt(alarm1)} / ${fmt(alarm2)} / ${fmt(alarm3)} 세 번만 두고, 다시 눕는 시간을 줄이세요.`,
+          '낮잠이 필요하면 15시 전 20분으로 제한하세요. 길게 자면 밤 취침이 다시 밀립니다.'
+        ],
+        extremeDebt: [
+          `수면시간이 약 ${minutesText(duration)}로 매우 부족합니다. 오늘은 완벽한 기상보다 무너짐 방지가 우선입니다.`,
+          `가능하면 ${bedText} 전후로 눕고, 내일은 ${wakeText} 기상을 목표로 잡으세요.`,
+          '오늘 카페인으로 버티면 밤 수면이 다시 밀릴 수 있어 오후 카페인은 피하는 쪽이 낫습니다.'
+        ],
+        urgent: [
+          `내일은 ${fmt(targetWake)} 기상을 고정하고, 최후 알람은 ${fmt(targetWake + 10)}까지만 두세요.`,
+          '오늘은 개운함보다 지각 방지가 우선입니다. 낮잠은 15시 전 짧게만 허용하세요.',
+          `일정이 끝난 뒤 늦잠으로 보상하면 다시 밀립니다. 다음날은 ${fmt(targetWake + 30)} 이내로 제한하세요.`
+        ],
+        urgentHeavy: [
+          `내일 ${fmt(targetWake)} 기상이 필수라면 오늘 취침보다 알람·기상 행동을 먼저 설계해야 합니다.`,
+          `침대 근처 알람 하나로는 부족합니다. ${fmt(alarm1)} / ${fmt(alarm2)} / ${fmt(alarm3)} 순서로 짧게 잡으세요.`,
+          '내일 성공해도 컨디션은 떨어질 수 있습니다. 복구는 다음날 늦잠을 막는 게 핵심입니다.'
+        ],
+        urgentDebt: [
+          '수면부족과 일정이 겹친 날입니다. 오늘은 수면 질 최적화보다 최소 피해 전략이 맞습니다.',
+          `알람은 ${fmt(alarm1)} / ${fmt(alarm2)} / ${fmt(alarm3)}로 두고, 일어난 뒤 바로 밝은 빛을 보세요.`,
+          '일정 후 2시간 이상 낮잠을 자면 밤 리듬이 다시 깨질 수 있습니다.'
+        ],
+        early: [
+          `오늘은 이미 목표보다 일찍 깬 상태라 기상 시간을 더 당길 필요는 없습니다.`,
+          `너무 일찍 자려고 하면 새벽에 깨는 패턴이 생길 수 있어 ${bedText} 전후를 권장합니다.`,
+          `내일은 ${fmt(targetWake)} 전후로 맞춰 리듬을 안정시키세요.`
+        ],
+        tooEarly: [
+          '너무 일찍 깬 상태입니다. 이걸 계속 성공으로 보면 수면 시간이 짧아질 수 있습니다.',
+          `오늘은 ${bedText} 전후 취침, ${fmt(targetWake)} 전후 기상으로 되돌리는 쪽이 좋습니다.`,
+          '새벽에 자주 깨는 패턴이 반복되면 단순 리듬 계산보다 수면 상태 점검이 필요합니다.'
+        ],
+        lateNapDelay: [
+          '오후 늦은 낮잠이 밤 취침을 뒤로 밀 가능성이 큽니다.',
+          `오늘은 ${bedText}보다 이른 취침을 기대하지 말고, 내일 ${wakeText} 기상을 우선하세요.`,
+          '내일은 낮잠을 자더라도 15시 전 20분 안으로 제한하는 게 핵심입니다.'
+        ],
+        alcoholDelay: [
+          '술을 마신 날은 잠든 시간보다 수면 질과 기상 안정성이 더 흔들릴 수 있습니다.',
+          `오늘은 ${bedText} 취침보다 내일 ${wakeText} 기상 후 물·밝은 빛 루틴이 더 중요합니다.`,
+          '음주 다음날 늦잠으로 보상하면 리듬이 하루 더 밀릴 가능성이 있습니다.'
+        ],
+        alcoholRecovery: [
+          '기상은 크게 무너지지 않았지만, 음주 후에는 수면 회복감이 낮을 수 있습니다.',
+          `오늘은 ${bedText} 전후로 무리 없이 눕고, 내일 ${wakeText} 기상으로 안정시키세요.`,
+          '오늘 추가 음주나 늦은 낮잠이 들어가면 현재 유지형에서 지연형으로 바뀔 수 있습니다.'
+        ]
+      };
 
-      let point1 = `오늘은 ${fmt(recommendedBed)} 전후로 눕고, ${fmt(recommendedWake)} 기상을 1차 목표로 잡으세요.`;
-      let point2 = '기상 후 30분 안에 창가나 야외에서 빛을 먼저 보고, 다시 눕지 않는 것이 핵심입니다.';
-      let point3 = delay > 60 ? '내일 성공하면 다음날 기상 시간을 30~45분 더 당겨서 목표 시간에 접근하세요.' : '같은 기상 시간을 2~3일 반복해서 리듬을 고정하세요.';
+      (scenarioPoints[scenario.key] || []).forEach((p) => addUnique(points, p));
 
-      if (delay > 120 && !important) {
-        point1 = `오늘은 한 번에 ${fmt(targetWake)}로 당기지 말고, ${fmt(recommendedWake)} 기상부터 성공하는 쪽이 현실적입니다.`;
-        point2 = `추천 취침 ${fmt(recommendedBed)}보다 1시간 이상 일찍 누우면 뒤척일 가능성이 높으니, 취침 목표를 무리하게 앞당기지 마세요.`;
-      }
-      if (important) {
-        point1 = `내일은 일정이 있으므로 ${fmt(targetWake)} 기상을 고정하고, 최후 알람은 ${fmt(targetWake + 10)}까지만 두세요.`;
-        point2 = '잠이 부족해도 기상 시간을 먼저 지키는 날입니다. 낮잠은 필요하면 15시 전 15~20분까지만 허용하세요.';
-      }
-      if (nap === 'late') {
-        point2 = '오후 늦은 낮잠 때문에 잠드는 시간이 밀릴 수 있어, 오늘 취침 목표는 평소보다 보수적으로 잡았습니다.';
-      }
-      if (alcohol) {
-        point2 = '술을 마신 날은 수면 질이 떨어질 수 있으니, 기상 직후 물을 마시고 밝은 빛을 보는 루틴을 먼저 잡으세요.';
-      }
+      if (lateCaffeine) addUnique(points, '카페인 시간이 늦은 편이라 오늘 취침 목표를 조금 보수적으로 잡았습니다.');
+      if (nap === 'long') addUnique(points, '낮잠이 길었던 날은 밤에 바로 잠들기 어렵기 때문에 취침 목표를 30분 늦게 반영했습니다.');
+      if (nap === 'late') addUnique(points, '늦은 낮잠이 있어 오늘 취침은 예상보다 늦어질 수 있습니다.');
+      if (alcohol === 'yes') addUnique(points, '술을 마신 날은 잠든 시간보다 수면 질이 흔들릴 수 있어 기상 직후 물과 밝은 빛 루틴을 우선하세요.');
+      if (duration > 540 && scenario.key === 'stable') addUnique(points, '수면시간이 충분한 편이라 오늘은 더 자는 것보다 같은 시간대 기상 유지가 낫습니다.');
+      if (duration < 420 && !['debt', 'extremeDebt', 'urgentDebt'].includes(scenario.key)) addUnique(points, '수면시간이 짧은 편이라 내일 오전 집중력 저하 가능성을 감안하세요.');
 
       return {
-        delay,
-        status,
+        delay, duration, scenario, score, tags,
         stateText,
-        mainAdvice,
+        mainAdvice: mainAdviceMap[scenario.key],
         recommendedBed: fmt(recommendedBed),
         recommendedWake: fmt(recommendedWake),
         alarms: `${fmt(alarm1)} / ${fmt(alarm2)} / ${fmt(alarm3)}`,
         caffeineGuide,
-        caffeineWarning,
         napGuide,
         lightGuide: `${fmt(lightStart)}~${fmt(lightEnd)} 사이 햇빛 10~20분`,
-        point1,
-        point2,
-        point3
+        points: points.slice(0, 6),
+        previewDays: buildPreviewDays(targetWake, recommendedWake, scenario.key),
+        paidHint: ['stable', 'dawnStable', 'early'].includes(scenario.key)
+          ? '현재는 결제보다 무료 계산으로 유지 점검만 해도 충분합니다.'
+          : '3일 안에 목표 시간에 붙이는 짧은 플랜이 필요한 상태입니다.'
       };
     }
 
     function render(plan) {
       placeholder.style.display = 'none';
       resultContent.style.display = 'block';
+      const preview = plan.previewDays.map((d, idx) => `
+        <div class="preview-day ${idx === 3 ? 'locked' : ''}">
+          <b>${d[0]}</b><span>${d[1]}</span>
+        </div>`).join('');
+      const tags = plan.tags.map((t) => `<span class="tag">${t}</span>`).join('');
       resultContent.innerHTML = `
-        <div class="status-box ${plan.status.cls}">
-          <h3>${plan.status.title}</h3>
+        <div class="status-box ${plan.scenario.cls}">
+          <h3>${plan.scenario.title}</h3>
           <p>${plan.stateText}<br>${plan.mainAdvice}</p>
+          <div class="tag-row">${tags}</div>
+          <div class="score-row">
+            <div class="score-label">리듬 점수</div>
+            <div class="score-bar"><div class="score-fill" style="width:${plan.score}%"></div></div>
+            <div class="score-num">${plan.score}</div>
+          </div>
         </div>
 
         <div class="result-list">
@@ -666,12 +719,17 @@
 
         <div class="guide">
           <h4>오늘 조정 포인트</h4>
-          <ul>
-            <li>${plan.point1}</li>
-            <li>${plan.point2}</li>
-            <li>${plan.point3}</li>
-            ${plan.caffeineWarning ? `<li>${plan.caffeineWarning}</li>` : ''}
-          </ul>
+          <ul>${plan.points.map((p) => `<li>${p}</li>`).join('')}</ul>
+        </div>
+
+        <div class="return-box">
+          <strong>다시 쓸 이유</strong>
+          ${plan.paidHint} 내일 실제 기상 시간이 계획과 다르면 추천 시간이 달라지므로, 일어난 시간을 다시 넣으면 복구 속도를 다시 계산합니다.
+        </div>
+
+        <div class="guide">
+          <h4>3일 플랜 미리보기</h4>
+          <div class="preview-grid">${preview}</div>
         </div>
       `;
     }
@@ -681,11 +739,7 @@
       errorText.style.display = 'none';
       const required = ['sleepTime', 'wakeTime', 'targetWake'];
       const invalid = required.some((id) => parseTime(document.getElementById(id).value) === null);
-      if (invalid) {
-        errorText.style.display = 'block';
-        return;
-      }
-
+      if (invalid) { errorText.style.display = 'block'; return; }
       const manualData = {
         sleepTime: document.getElementById('sleepTime').value,
         wakeTime: document.getElementById('wakeTime').value,
