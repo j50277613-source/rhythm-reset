@@ -48,10 +48,34 @@ document.getElementById('persona').addEventListener('change',updatePersonaHint);
 let selectedSituation='late';
 function situationConfig(key){
   const map={
-    late:{label:'늦잠 잔 날',penalty:6,needAdjust:0,wakeStepBonus:30,summary:'늦잠으로 리듬이 뒤로 밀린 상황입니다. 오늘은 기상시간을 다시 고정하는 쪽이 핵심입니다.',decision:'늦잠 다음날은 취침을 억지로 앞당기기보다 내일 기상을 먼저 고정해야 리듬이 덜 밀립니다.'},
-    allnight:{label:'밤샘·게임 후',penalty:14,needAdjust:-30,wakeStepBonus:0,summary:'수면부족과 리듬 지연이 같이 온 상황입니다. 오늘은 완전 복구보다 손실을 줄이는 기준이 우선입니다.',decision:'밤샘 뒤에는 목표 기상을 무리하게 당기면 실패 가능성이 큽니다. 일정이 없으면 수면 확보를 조금 더 우선합니다.'},
-    alcoholShift:{label:'술자리·마감근무',penalty:10,needAdjust:0,wakeStepBonus:0,summary:'잠든 시간보다 수면 질과 기상 안정성이 흔들릴 수 있는 상황입니다. 알람 실패 방지와 다음날 낮잠 제한이 중요합니다.',decision:'술자리·마감근무 뒤에는 같은 수면시간이어도 아침 멍함이 커질 수 있어, 기상 후 첫 행동을 단순하게 잡아야 합니다.'},
-    important:{label:'시험·오픈 전날',penalty:8,needAdjust:-20,wakeStepBonus:0,summary:'내일 아침 실패 비용이 큰 상황입니다. 최후 기상선을 넘기지 않는 쪽으로 계산합니다.',decision:'시험·오픈 전날은 컨디션 최적화보다 기상 성공이 우선입니다. 알람 역할을 줄이고 명확하게 나눠야 합니다.'}
+    late:{
+      label:'늦잠 잔 날',penalty:8,needAdjust:0,wakeStepBonus:20,needOverride:null,
+      summary:'늦잠으로 생활 리듬이 뒤로 밀린 상황입니다. 오늘은 “일찍 눕기”보다 수면 압력을 다시 만들고 내일 기상시간을 고정하는 쪽이 핵심입니다.',
+      decision:'늦잠 다음날은 밤에 잠이 바로 안 올 수 있습니다. 취침을 과하게 당기기보다 낮잠을 막고, 내일 기상을 목표 근처에 고정하는 방식으로 계산합니다.',
+      resultFocus:'오늘 밤 늦게 밀리지 않게 막고, 내일 기상 성공 후 같은 시간대를 한 번 더 고정합니다.',
+      aiFocus:'늦잠으로 수면 압력이 약해진 상황. 낮잠 차단, 침대 밖 대기 기준, 내일 기상 고정을 중심으로 답하세요.'
+    },
+    allnight:{
+      label:'밤샘·게임 후',penalty:18,needAdjust:60,wakeStepBonus:-20,needOverride:510,
+      summary:'수면부족과 리듬 지연이 같이 온 상황입니다. 오늘은 “정상 리듬 완전 복구”보다 손실을 줄이고 다음날 다시 밀리지 않게 막는 기준이 우선입니다.',
+      decision:'밤샘·게임 후에는 억지 조기 기상이 실패로 끝나기 쉽습니다. 무조건 일정이 없으면 수면 확보를 조금 더 우선하고, 일정이 있으면 최후 기상선만 지키는 식으로 계산합니다.',
+      resultFocus:'회복 수면을 확보하되, 낮잠으로 밤이 다시 밀리는 것을 막습니다.',
+      aiFocus:'밤샘 후 회복 수면, 낮잠 제한, 카페인 보정, 다음날 재밀림 방지를 중심으로 답하세요.'
+    },
+    alcoholShift:{
+      label:'술자리·마감근무',penalty:13,needAdjust:30,wakeStepBonus:0,needOverride:480,
+      summary:'잠든 시간보다 수면 질과 아침 멍함이 흔들릴 수 있는 상황입니다. 기상 후 첫 30분을 단순하게 만들고 낮잠 과다를 막는 게 중요합니다.',
+      decision:'술자리·마감근무 뒤에는 같은 수면시간이어도 개운함이 떨어질 수 있습니다. 아침 빛보다 먼저 세면·수분·이동 같은 단순 루틴을 잡고, 낮잠은 짧게 제한하는 방식으로 계산합니다.',
+      resultFocus:'아침 멍함을 줄이고, 다음날 낮잠이 길어져 밤이 밀리는 흐름을 차단합니다.',
+      aiFocus:'수면 질 저하, 아침 멍함, 낮잠 제한, 다음날 밤 복구를 중심으로 답하세요.'
+    },
+    important:{
+      label:'시험·오픈 전날',penalty:10,needAdjust:-30,wakeStepBonus:0,needOverride:420,
+      summary:'내일 아침 실패 비용이 큰 상황입니다. 컨디션 최적화보다 목표 기상 성공과 최후 기상선을 넘기지 않는 것이 우선입니다.',
+      decision:'시험·오픈 전날은 “푹 자는 것”보다 “정해진 시간에 일어나는 것”이 우선입니다. 알람 역할을 줄이고 명확하게 나눠서 실제 기상 성공률을 높이는 방식으로 계산합니다.',
+      resultFocus:'목표 기상시간을 고정하고, 알람 실패를 줄이는 장치를 우선합니다.',
+      aiFocus:'기상 성공 우선, 최후 기상선, 아침 준비 동선, 알람 실패 방지를 중심으로 답하세요.'
+    }
   };
   return map[key]||map.late;
 }
@@ -61,7 +85,7 @@ function setSituation(key){
 }
 document.querySelectorAll('.case-pill').forEach(btn=>btn.addEventListener('click',()=>{setSituation(btn.dataset.situation); if(lastPlan) calculateRhythm();}));
 function rhythmDriftText(min){const abs=Math.abs(Math.round(min));if(abs<30)return '목표와 거의 맞음';return `약 ${minutesText(abs)} ${min>0?'뒤로 밀림':'앞당겨짐'}`}
-function rhythmScore(drift,sleep,nap,alcohol,caffeineLate,schedule,alarmStyle,situation){let score=100;score-=Math.min(45,Math.abs(drift)/10);if(sleep<360)score-=18;if(sleep<300)score-=12;if(nap==='long'||nap==='late')score-=10;if(alcohol==='yes')score-=8;if(caffeineLate)score-=8;if(schedule==='must'&&sleep<360)score-=8;if(alarmStyle==='miss')score-=10;if(alarmStyle==='bedphone'||alarmStyle==='snooze')score-=6;score-=situationConfig(situation).penalty;return Math.max(0,Math.min(100,Math.round(score)))}
+function rhythmScore(drift,sleep,nap,alcohol,caffeineLate,schedule,alarmStyle,situation){let score=100;score-=Math.min(45,Math.abs(drift)/10);if(sleep<360)score-=18;if(sleep<300)score-=12;if(nap==='long'||nap==='late')score-=10;if(alcohol==='yes')score-=8;if(caffeineLate)score-=8;if(schedule==='must'&&sleep<360)score-=8;if(alarmStyle==='miss')score-=12;if(alarmStyle==='snooze')score-=6;score-=situationConfig(situation).penalty;return Math.max(0,Math.min(100,Math.round(score)))}
 function personaMorningLine(persona,recommendedWake){
   if(persona==='worker')return `직장인: ${fmt(recommendedWake+10)} 씻기·출근 준비 시작, 출근길 또는 창가 앞에서 빛 10분, 첫 카페인은 ${fmt(recommendedWake+60)} 이후`;
   if(persona==='student')return `학생: ${fmt(recommendedWake+15)} 씻기·등교 준비, 이동 중 빛 10분, 첫 집중은 ${fmt(recommendedWake+60)} 이후`; 
@@ -70,14 +94,15 @@ function personaMorningLine(persona,recommendedWake){
 function alarmGuide(alarmStyle){
   if(alarmStyle==='onTime')return '알람을 잘 듣는 편이라 실제 기상 알람과 예비 알람만으로도 충분합니다.';
   if(alarmStyle==='snooze')return '알람을 미루는 편이면 예열 알람은 짧게, 실제 기상 알람은 침대 밖에 두는 기준이 필요합니다.';
-  if(alarmStyle==='miss')return '알람을 잘 못 듣는 편이면 소리·진동을 함께 쓰고, 최후 기상선 알람은 침대에서 끌 수 없게 둬야 합니다.';
-  return '알람 끄고 다시 눕는 편이면 폰을 손에 들고 침대로 돌아오는 동선을 끊는 게 핵심입니다.';
+  return '알람을 잘 못 듣거나 끄고 다시 눕는 편이면, 폰을 손에 들고 침대로 돌아오는 동선을 끊는 게 핵심입니다.';
 }
 function decisionText(plan){
   const drift=plan.wakeDelay, sleep=plan.sleepDuration;
-  if(plan.schedule==='must')return{title:'기상 고정 우선',body:`내일은 ${plan.targetText} 기상이 고정값입니다. 오늘은 취침을 가능한 범위에서 앞당기고, 수면이 부족해도 최후 기상선 ${plan.finalLine}을 넘기지 않는 쪽이 맞습니다.`};
+  if(plan.situation==='important'||plan.schedule==='must')return{title:'기상 성공 우선',body:`내일은 ${plan.targetText} 기상을 넘기면 손실이 큽니다. 오늘은 수면량보다 최후 기상선 ${plan.finalLine}을 지키는 쪽으로 잡고, 알람 위치와 아침 동선을 먼저 고정하세요.`};
+  if(plan.situation==='allnight')return{title:'회복 수면 우선',body:`밤샘·게임 후에는 ${plan.wakeText} 기상으로 수면 손실을 줄이고, 낮잠을 길게 자서 오늘 밤이 다시 밀리는 흐름을 막는 편이 낫습니다.`};
+  if(plan.situation==='alcoholShift')return{title:'아침 멍함 관리 우선',body:`술자리·마감근무 뒤에는 수면시간보다 아침 멍함이 문제입니다. 기상 직후에는 판단이 필요한 일보다 세면·물·이동 같은 단순 행동부터 잡으세요.`};
   if(sleep<300)return{title:'기상 뒤로 조정 우선',body:`확보 수면이 ${plan.sleepText}라 너무 짧습니다. 무조건 목표시간을 맞추기보다 ${plan.wakeText} 기상으로 수면을 조금 더 확보하고, 다음날 다시 당기는 편이 현실적입니다.`};
-  if(Math.abs(drift)>180)return{title:'기상 단계 조정 우선',body:`리듬이 ${plan.rhythmDrift} 상태입니다. 취침을 억지로 당기기보다 내일 기상시간을 1~2시간 단위로 먼저 조정하는 쪽이 실패 확률이 낮습니다.`};
+  if(Math.abs(drift)>180)return{title:'기상 단계 조정 우선',body:`리듬이 ${plan.rhythmDrift} 상태입니다. 취침을 억지로 당기기보다 내일 기상시간을 먼저 고정하는 쪽이 실패 확률이 낮습니다.`};
   if(plan.preferred!==null&&sleep<420)return{title:'다음날 복구 우선',body:`오늘 원하는 취침시간 기준으로 수면이 충분하지 않습니다. 내일 아침은 계획대로 가되, 내일 밤 취침 기준을 지키는 것이 리듬 복구의 핵심입니다.`};
   return{title:'기상 고정 유지',body:`현재는 큰 충격 없이 맞출 수 있습니다. 오늘은 취침시간을 크게 흔들기보다 ${plan.wakeText} 기상을 고정하는 편이 좋습니다.`};
 }
@@ -88,11 +113,12 @@ function makePlan(){
   const nap=document.getElementById('nap').value,alcohol=document.getElementById('alcohol').value,sleepDebt=document.getElementById('sleepDebt').value,alarmStyle=document.getElementById('alarmStyle').value;
   let recommendedWake=target;
   if(schedule==='none')recommendedWake=stepWake(wake,target,60+(situationData.wakeStepBonus||0));
-  if(schedule==='soft')recommendedWake=stepWake(wake,target,120);
+  if(schedule==='soft')recommendedWake=stepWake(wake,target,120+(situationData.wakeStepBonus||0));
   if(schedule==='must'||situation==='important')recommendedWake=target;
-  if(situation==='allnight'&&schedule==='none')recommendedWake=stepWake(wake,target,60);
+  if(situation==='allnight'&&schedule==='none')recommendedWake=stepWake(wake,target,40);
+  if(situation==='alcoholShift'&&schedule==='none')recommendedWake=stepWake(wake,target,90);
   const wakeLine=targetTimelineTomorrow(current,recommendedWake);
-  let need=450;if(persona==='student')need=480;if(schedule==='must'||situation==='important')need=420;if(sleepDebt==='high')need+=30;need+=situationData.needAdjust||0;
+  let need=450;if(persona==='student')need=480;if(situationData.needOverride)need=situationData.needOverride;if(schedule==='must'||situation==='important')need=420;if(sleepDebt==='high')need+=30;need+=situationData.needAdjust||0;
   let bedLine;
   if(preferred!==null)bedLine=timelineAfter(current,preferred);
   else if(mode==='soon')bedLine=current+15;
@@ -115,7 +141,7 @@ function makePlan(){
   if(schedule==='none')caffeineGuide='내일 일정이 없으면 카페인으로 억지 보정하지 말고, 첫 카페인은 기상 60분 뒤로 미루세요.';
   const lightGuide=`${fmt(recommendedWake)}~${fmt(recommendedWake+30)} 사이 창가·야외 빛 10~20분`;
   const score=rhythmScore(wakeDelay,sleepDuration,nap,alcohol,caffeineLate,schedule,alarmStyle,situation);
-  const base={mode,persona,schedule,situation,situationLabel:situationData.label,situationSummary:situationData.summary,situationDecision:situationData.decision,wake,target,recommendedWake,bedLine,preferred,caffeine,nap,alcohol,sleepDebt,alarmStyle,sleepDuration,wakeDelay,rhythmDrift:rhythmDriftText(wakeDelay),score,status:{title,cls},bedText:fmt(bedLine),targetText:fmt(target),wakeText:fmt(recommendedWake),sleepText:durationText(sleepDuration),alarms:`${fmt(alarmA)} / ${fmt(alarmB)} / ${fmt(alarmC)}`,finalLine:fmt(finalLine),caffeineGuide,lightGuide,personaLine:personaMorningLine(persona,recommendedWake),alarmGuide:alarmGuide(alarmStyle)};
+  const base={mode,persona,schedule,situation,situationLabel:situationData.label,situationSummary:situationData.summary,situationDecision:situationData.decision,situationFocus:situationData.resultFocus,aiFocus:situationData.aiFocus,wake,target,recommendedWake,bedLine,preferred,caffeine,nap,alcohol,sleepDebt,alarmStyle,sleepDuration,wakeDelay,rhythmDrift:rhythmDriftText(wakeDelay),score,status:{title,cls},bedText:fmt(bedLine),targetText:fmt(target),wakeText:fmt(recommendedWake),sleepText:durationText(sleepDuration),alarms:`${fmt(alarmA)} / ${fmt(alarmB)} / ${fmt(alarmC)}`,finalLine:fmt(finalLine),caffeineGuide,lightGuide,personaLine:personaMorningLine(persona,recommendedWake),alarmGuide:alarmGuide(alarmStyle)};
   base.decision=decisionText(base);
   base.actions=[];
   if(mode==='soon')base.actions.push(`지금은 추가 계산보다 ${fmt(bedLine)}부터 바로 취침 준비를 시작하세요.`);
@@ -136,7 +162,7 @@ function render(plan){
   const bedLabel=plan.mode==='soon'?'지금부터 취침 준비':'오늘 잘 시간 추천';
   resultContent.innerHTML=`
     <div class="status-box ${plan.status.cls}"><h3>${plan.status.title}</h3><p>${plan.situationLabel} · ${personaName(plan.persona)} · ${document.getElementById('schedule').selectedOptions[0].textContent} 기준으로 계산했습니다.</p></div>
-    <div class="guide"><h4>선택 상황 기준</h4><p>${plan.situationSummary}</p></div>
+    <div class="guide"><h4>선택 상황 기준</h4><p>${plan.situationSummary}</p><p><b>이번 계산의 핵심:</b> ${plan.situationFocus}</p></div>
     <div class="score-row">
       <div class="score-card"><span>내 리듬 위치</span><strong>${plan.rhythmDrift}</strong><details><summary>위치 설명</summary><div class="details-body"><p>목표 기상시간과 오늘 기상시간을 비교해, 지금 생활 리듬이 목표보다 늦은 쪽인지 빠른 쪽인지 보여줍니다.</p><p><b>뒤로 밀림</b>이 크면 오늘 억지로 일찍 눕는 것보다 내일 기상시간을 먼저 고정하는 편이 안정적입니다.</p><p><b>앞당겨짐</b>이면 이미 몸이 이른 시간대에 맞춰져 있는 상태라, 밤에 너무 일찍 졸려 리듬이 다시 흔들리지 않게 유지 기준을 봅니다.</p></div></details></div>
       <div class="score-card"><span>리듬 안정 점수</span><strong>${plan.score}점</strong><div class="meter"><i style="width:${plan.score}%"></i></div><details><summary>점수 기준</summary><div class="details-body"><p>리듬 안정 점수는 목표 기상시간과 오늘 기상시간 차이, 확보 수면, 낮잠, 술, 늦은 카페인, 알람 습관을 합쳐 본 생활 리듬 점수입니다.</p><p>80점 이상: 안정권 / 60~79점: 조정 필요 / 40~59점: 리듬 흔들림 큼 / 39점 이하: 무리한 기상 또는 복구 우선 상태입니다.</p></div></details></div>
@@ -149,7 +175,7 @@ function render(plan){
       <div class="result-item"><span>내일 아침 기준</span><strong>${plan.personaLine}</strong></div>
     </div>
     <div class="guide"><h4>조정 방향</h4><p><b>${plan.decision.title}</b></p><p>${plan.decision.body}</p></div>
-    <div class="upgrade-card"><h4>AI 플랜이 필요한 경우</h4><p>계산 결과는 방향만 잡습니다. AI 플랜은 선택 상황과 최근 기록을 바탕으로 실패 지점을 막는 실행 순서를 만듭니다.</p><ul><li>잠이 안 올 때 침대 밖으로 나오는 기준</li><li>알람을 어디에 둘지와 다시 눕지 않는 장치</li><li>목표 기상 실패 후 낮잠·카페인·오늘 밤 취침 복구 기준</li></ul></div>
+    <div class="upgrade-card"><h4>AI 7일 관리가 필요한 경우</h4><p>오늘 한 번 계산하고 끝내면 다시 밀릴 수 있습니다. AI는 오늘 밤 실행, 기상 실패 대비, 7일 복구 기준을 상황별로 묶어서 만듭니다.</p><ul><li>${plan.situationLabel}에 맞춘 실패 지점 차단</li><li>기상 실패 후 낮잠·카페인·오늘 밤 취침 복구 기준</li><li>최근 수면·기상 기록을 반영한 7일 관리 기준</li></ul></div>
   `;
   saveTempPlan(plan);renderRecords();
 }
@@ -196,6 +222,7 @@ function buildAiPrompt(){
 [사용자 상황]
 - 사용 상황: ${plan.mode==='soon'?'곧 잘 예정':'미리 계획 중'}
 - 선택 상황: ${plan.situationLabel} / ${plan.situationSummary}
+- 상황별 AI 초점: ${plan.aiFocus}
 - 생활 유형: ${personaName(plan.persona)}
 - 내일 일정: ${document.getElementById('schedule').selectedOptions[0].textContent}
 - 오늘 일어난 시간: ${fmt(plan.wake)}
@@ -222,12 +249,13 @@ ${records}
 - 조정 방향: ${plan.decision.title} / ${plan.decision.body}
 - 내일 아침 기준: ${plan.personaLine}
 - 선택 상황 기준: ${plan.situationDecision}
+- 상황별 핵심: ${plan.situationFocus}
 
 [답변 원칙]
 - 기본 계산 결과에 이미 나온 시간표만 반복하지 마세요.
 - 사용자가 실제로 실패하는 지점, 즉 잠이 안 옴·알람 끄고 다시 눕기·기상 실패·낮잠 과다를 막는 기준을 구체적으로 주세요.
 - 최근 기록이 있으면 기록을 반영해서 조정하세요. 기록이 없으면 첫 사용 기준이라고 말하세요.
-- 선택 상황(${plan.situationLabel})에 맞는 조언이 반드시 달라져야 합니다. 늦잠, 밤샘, 술자리·마감근무, 시험·오픈 전날을 같은 방식으로 답하지 마세요.
+- 선택 상황(${plan.situationLabel})에 맞는 조언이 반드시 달라져야 합니다. 늦잠, 밤샘, 술자리·마감근무, 시험·오픈 전날을 같은 방식으로 답하지 마세요. 답변의 핵심은 ${plan.aiFocus}입니다.
 
 [답변 형식]
 가독성이 중요합니다. 큰 제목은 반드시 1. 3줄 요약처럼 번호를 붙이세요. 세부 항목은 1-1, 2-3 같은 번호를 쓰지 말고, - 판단:, - 행동:, - 기준: 같은 짧은 불릿으로 써주세요. 각 큰 제목 사이에는 빈 줄을 넣고, 한 문단은 2~3줄을 넘기지 마세요.
@@ -286,6 +314,11 @@ ${records}
 10. ${personaName(plan.persona)} 기준 추가 행동
 - 오전 첫 행동
 - 카페인/운동/이동 기준
+
+11. 7일 리듬 관리 기준
+- 1일차: 오늘 밤과 내일 아침에서 반드시 지켜야 할 기준
+- 2~3일차: 실패하면 유지할지, 성공하면 몇 분 당길지
+- 4~7일차: 주말 늦잠, 낮잠, 카페인으로 다시 밀리지 않는 기준
 
 금지 표현: 핸드폰 하지 마세요, 일찍 주무세요, 알람 많이 맞추세요 같은 뻔한 말.
 말투는 간결하고 현실적으로 해주세요.`
