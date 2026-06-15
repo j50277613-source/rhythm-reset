@@ -92,14 +92,14 @@
 <header>
 <div class="logo">🌙 리듬리셋</div>
 <h1>오늘 몇 시에 자야 할까?</h1>
-<p class="lead">오늘 상황을 고르면, 오늘 잘 시간·내일 기상·복구 기준이 상황별로 달라집니다.</p>
+<p class="lead">오늘 상황과 목표 시간을 기준으로, 오늘 잘 시간·내일 기상·되돌리기 기준을 계산합니다.</p>
 </header>
 <section class="use-cases" aria-label="오늘 상황 선택">
-  <button type="button" class="case-pill active" data-situation="recovery"><b>일정 없음·리듬 회복</b>무리한 기상보다 생활 리듬 복구 우선</button>
-  <button type="button" class="case-pill" data-situation="late"><b>늦잠 잔 날</b>낮잠 차단과 내일 기상 고정 우선</button>
-  <button type="button" class="case-pill" data-situation="allnight"><b>밤샘·게임 후</b>수면 손실을 줄이고 재밀림 방지</button>
-  <button type="button" class="case-pill" data-situation="alcoholShift"><b>술자리·마감근무</b>아침 멍함과 낮잠 과다 방지</button>
-  <button type="button" class="case-pill" data-situation="important"><b>시험·오픈 전날</b>무조건 기상과 최후 기상선 우선</button>
+  <button type="button" class="case-pill active" data-situation="recovery"><b>일정 없음·리듬 회복</b>목표 기상보다 리듬 회복선 우선</button>
+  <button type="button" class="case-pill" data-situation="late"><b>늦잠 잔 날</b>목표 기상 근처 고정·낮잠 차단</button>
+  <button type="button" class="case-pill" data-situation="allnight"><b>밤샘·게임 후</b>수면 손실 최소화·복구일 판단</button>
+  <button type="button" class="case-pill" data-situation="alcoholShift"><b>술자리·마감근무</b>아침 멍함·낮잠 과다 방지</button>
+  <button type="button" class="case-pill" data-situation="important"><b>시험·오픈 전날</b>목표 기상 고정·최후 기상선 우선</button>
 </section>
 <main>
 <section class="wrap">
@@ -130,11 +130,32 @@
 <input class="time-input" id="wakeTime" inputmode="text" placeholder="예: 09:00 또는 9시" required="" type="text"/>
 </div>
 <div>
-<label for="targetWake">내일 목표 기상시간</label>
-<input class="time-input" id="targetWake" inputmode="text" placeholder="예: 05:00 또는 5시" required="" type="text"/>
+<label for="targetWake" id="targetWakeLabel">내일 목표 기상시간</label>
+<input class="time-input" id="targetWake" inputmode="text" placeholder="예: 05:00 또는 5시" type="text"/>
+<p class="small-text">직접 입력하거나 아래 출근·등교 시간으로 자동 계산할 수 있습니다.</p>
+</div>
+<div>
+<label for="startTime" id="startTimeLabel">내일 출근·등교·일정 시작 시간</label>
+<input class="time-input" id="startTime" inputmode="text" placeholder="선택 · 예: 09:00" type="text"/>
+</div>
+<div>
+<label for="prepMinutes" id="prepLabel">준비·이동 여유</label>
+<select id="prepMinutes">
+<option value="">모르면 비워두기</option>
+<option value="30">30분</option>
+<option value="45">45분</option>
+<option value="60">1시간</option>
+<option value="75">1시간 15분</option>
+<option value="90">1시간 30분</option>
+<option value="120">2시간</option>
+</select>
+</div>
+<div>
+<label>선택한 상황</label>
+<div class="hint" id="selectedSituationText">일정 없음·리듬 회복 기준으로 계산합니다.</div>
 </div>
 <div class="full">
-<p class="small-text">내일 일정 기준은 위 상황 카드에 함께 반영됩니다. 시험·오픈 전날은 무조건 기상 우선, 일정 없음은 리듬 회복 우선으로 계산합니다.</p>
+<p class="small-text">출근·등교·일정 시간이 있으면 그 시간에서 준비·이동 여유를 빼서 목표 기상시간을 잡습니다. 직접 입력한 목표 기상시간이 있으면 그 값을 우선합니다.</p>
 </div>
 <div class="full">
 <label for="preferredBed">오늘 원하는 취침시간</label>
@@ -229,35 +250,35 @@
 </section>
 <section class="below two-grid">
 <div class="card">
-<h2 class="section-title">7일 리듬 체크</h2>
-<p class="small-text">AI 플랜은 한 번에 7일치를 다 보는 방식이 아니라, 하루씩 체크해서 다음날 기준을 다시 잡는 구조입니다.</p>
-<div class="guide" id="sevenStatus"><h4>현재 상태</h4><p>아직 7일 체크를 시작하지 않았습니다.</p></div>
+<h2 class="section-title">생체 시계 되돌리기 체크</h2>
+<p class="small-text">AI가 1~7일 중 필요한 복구 기간을 판단하고, 하루씩 체크해서 다음날 기준을 다시 잡는 구조입니다.</p>
+<div class="guide" id="sevenStatus"><h4>현재 상태</h4><p>아직 되돌리기 체크를 시작하지 않았습니다.</p></div>
 <div class="check-grid">
 <div><label for="dayOutcome">오늘 결과</label><select id="dayOutcome"><option value="success">계획대로 일어남</option><option value="late30">30분 이상 늦음</option><option value="fail">목표 기상 실패</option></select></div>
 <div><label for="dayNap">오늘 낮잠</label><select id="dayNap"><option value="none">없음</option><option value="short">20분 이내</option><option value="long">길게 잠</option></select></div>
-<div><label for="dayCaffeine">카페인</label><select id="dayCaffeine"><option value="ok">기준 안에서 마심</option><option value="late">늦게 마심</option><option value="none">안 마심</option></select></div>
+<div><label for="dayCaffeine">카페인</label><select id="dayCaffeine"><option value="none">안 마심</option><option value="ok">기준 안에서 마심</option><option value="over">기준보다 늦게/많이 마심</option></select><p class="small-text" id="caffeineCheckHint">기준: 기상 60~90분 뒤 첫 카페인, 14시 이후 피하기</p></div>
 </div>
-<div class="actions"><button class="primary" id="startSevenBtn" type="button">7일 체크 시작</button><button class="ghost" id="saveDayBtn" type="button">오늘 체크 저장</button></div>
+<div class="actions"><button class="primary" id="startSevenBtn" type="button">되돌리기 체크 시작</button><button class="ghost" id="saveDayBtn" type="button">오늘 체크 저장</button></div>
 </div>
 <div class="card">
-<h2 class="section-title">AI 7일 리듬 관리</h2>
-<p class="small-text">선택한 상황과 수면·기상 기록을 바탕으로 오늘 할 일과 내일 조정 기준을 만듭니다. 7일 전체를 한 번에 끝내지 않고, 매일 체크해서 수정하는 방식입니다.</p>
+<h2 class="section-title">AI 생체 시계 되돌리기</h2>
+<p class="small-text">선택한 상황과 수면·기상 기록을 바탕으로 필요한 복구 기간을 1~7일 사이에서 판단하고, 매일 체크해서 다음날 기준을 수정합니다.</p>
 <div class="feature-grid">
 <div class="feature"><b>오늘 실행</b>씻기, 휴식, 방 세팅, 눕는 기준</div>
 <div class="feature"><b>기상 실패 대비</b>못 일어났을 때 낮잠·카페인·밤 복구</div>
 <div class="feature"><b>하루 체크</b>실제 기상 결과에 따라 다음날 조정</div>
-<div class="feature"><b>7일 변화</b>리듬이 당겨지는지 밀리는지 확인</div>
+<div class="feature"><b>1~7일 판단</b>망가진 정도에 따라 기간을 능동 조정</div>
 <div class="feature"><b>패턴 반영</b>알람 습관과 낮잠 기록 반영</div>
 </div>
 <details>
 <summary>AI 플랜 예시 보기</summary>
 <div class="details-body">
 <div class="example">
-<h4>AI 7일 관리 예시</h4>
+<h4>AI 생체 시계 되돌리기 예시</h4>
 <ol>
 <li><b>1. 오늘 밤 실행</b><br/>- 준비: 내일 입을 옷과 가방을 문 앞에 둡니다.<br/>- 씻기: 미지근한 물로 짧게 씻고 몸이 더우면 5분 식힌 뒤 눕습니다.<br/>- 눕는 기준: 20분 넘게 못 자면 침대 밖에서 조도 낮게 10분 쉬었다가 돌아옵니다.</li>
 <li><b>2. 내일 아침 실패 대비</b><br/>- 알람 위치: 실제 기상 알람은 침대에서 팔이 닿지 않는 곳에 둡니다.<br/>- 못 일어났을 때: 늦게 일어난 시간을 기록하고 낮잠은 15:00 전 20분 이내로 제한합니다.<br/>- 밤 복구: 취침을 무리하게 당기지 말고 같은 기상시간을 한 번 더 고정합니다.</li>
-<li><b>3. 하루 체크 기준</b><br/>- 성공: 다음날 15~30분 당깁니다.<br/>- 30분 이상 늦음: 같은 시간을 한 번 더 고정합니다.<br/>- 실패: 낮잠·카페인·취침 기준을 다시 계산합니다.</li>
+<li><b>3. 하루 체크 기준</b><br/>- 성공: 다음날 15~30분 당깁니다.<br/>- 30분 이상 늦음: 같은 시간을 한 번 더 고정합니다.<br/>- 실패: 낮잠·카페인·취침 기준을 다시 계산하고 복구 기간을 1~7일 안에서 다시 판단합니다.</li>
 </ol>
 </div>
 </div>

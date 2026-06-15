@@ -35,15 +35,45 @@ document.querySelectorAll('.time-input').forEach(el=>el.addEventListener('blur',
 function timelineAfter(base,clock){let t=clock;while(t<base)t+=1440;return t}
 function targetTimelineAfterBed(bedLine,target){let t=target;while(t<=bedLine)t+=1440;return t}
 function targetTimelineTomorrow(current,target){let t=target;if(t<=current)t+=1440;return t}
+function deriveTargetFromStart(){
+  const start=parseTime(document.getElementById('startTime')?.value);
+  const prepVal=document.getElementById('prepMinutes')?.value;
+  if(start===null||!prepVal)return null;
+  const prep=Number(prepVal);
+  if(Number.isNaN(prep))return null;
+  return {target:((start-prep)%1440+1440)%1440,start,prep};
+}
+function estimateRecoveryDays(plan){
+  let days=1;
+  const drift=Math.abs(plan.wakeDelay||0);
+  if(drift>90)days=2;
+  if(drift>180)days=3;
+  if(plan.sleepDuration<360)days=Math.max(days,2);
+  if(plan.sleepDuration<300)days=Math.max(days,3);
+  if(plan.nap==='long'||plan.nap==='late')days+=1;
+  if(plan.situation==='allnight')days=Math.max(days,3);
+  if(plan.situation==='alcoholShift')days=Math.max(days,2);
+  if(plan.situation==='important')days=Math.max(days,2);
+  if(plan.score<60)days=Math.max(days,4);
+  if(plan.score<40)days=Math.max(days,5);
+  return Math.min(7,Math.max(1,Math.round(days)));
+}
 function stepWake(todayWake,target,step){const d=diffClock(target,todayWake);if(Math.abs(d)<=step)return target;return todayWake+(d>0?step:-step)}
 function personaName(p){return p==='worker'?'직장인':p==='student'?'학생':'자율 생활형'}
 function personaConfig(p){
-  if(p==='worker')return{hint:'출근 준비시간과 지각 방지를 우선으로 계산합니다.'};
-  if(p==='student')return{hint:'등교 준비시간과 오전 학업 컨디션을 우선으로 계산합니다.'};
-  return{hint:'강제 일정이 적어도 리듬이 뒤로 밀리지 않게 계산합니다.'};
+  if(p==='worker')return{hint:'출근 준비시간과 지각 방지를 우선으로 계산합니다.', startLabel:'내일 출근 시간', prepHint:'출근 준비·이동 여유'};
+  if(p==='student')return{hint:'등교 준비시간과 오전 학업 컨디션을 우선으로 계산합니다.', startLabel:'내일 등교·수업 시작 시간', prepHint:'등교 준비·이동 여유'};
+  return{hint:'강제 일정이 적어도 리듬이 뒤로 밀리지 않게 계산합니다.', startLabel:'내일 일정 시작 시간', prepHint:'준비·이동 여유'};
 }
-function updatePersonaHint(){document.getElementById('personaHint').textContent=personaConfig(document.getElementById('persona').value).hint}
-document.getElementById('persona').addEventListener('change',updatePersonaHint);updatePersonaHint();
+function updatePersonaHint(){
+  const cfg=personaConfig(document.getElementById('persona').value);
+  document.getElementById('personaHint').textContent=cfg.hint;
+  const startLabel=document.getElementById('startTimeLabel');
+  const prepLabel=document.getElementById('prepLabel');
+  if(startLabel)startLabel.textContent=cfg.startLabel;
+  if(prepLabel)prepLabel.textContent=cfg.prepHint;
+}
+document.getElementById('persona').addEventListener('change',()=>{updatePersonaHint(); if(lastPlan)calculateRhythm();});updatePersonaHint();
 
 let selectedSituation='recovery';
 function situationConfig(key){
@@ -90,6 +120,9 @@ function setSituation(key){
   if(!key)return;
   selectedSituation=key;
   document.querySelectorAll('.case-pill').forEach(btn=>btn.classList.toggle('active',btn.dataset.situation===key));
+  const cfg=situationConfig(key);
+  const box=document.getElementById('selectedSituationText');
+  if(box)box.textContent=`${cfg.label} 기준 · ${cfg.scheduleLabel}`;
 }
 document.querySelectorAll('.case-pill').forEach(btn=>btn.addEventListener('click',()=>{setSituation(btn.dataset.situation); if(lastPlan) calculateRhythm();}));
 setSituation(selectedSituation);
@@ -116,16 +149,27 @@ function decisionText(plan){
   return{title:'기상 고정 유지',body:`현재는 큰 충격 없이 맞출 수 있습니다. 오늘은 취침시간을 크게 흔들기보다 ${plan.wakeText} 기상을 고정하는 편이 좋습니다.`};
 }
 function makePlan(){
-  const mode=document.getElementById('mode').value,persona=document.getElementById('persona').value,situation=selectedSituation,situationData=situationConfig(selectedSituation),schedule=situationData.schedule;
-  const current=nowMin(),wake=parseTime(document.getElementById('wakeTime').value),target=parseTime(document.getElementById('targetWake').value),preferred=parseTime(document.getElementById('preferredBed').value),caffeine=parseTime(document.getElementById('caffeine').value);
+  const mode=document.getElementById('mode').value,persona=document.getElementById('persona').value,situation=selectedSituation,situationData=situationConfig(selectedSituation);
+  let schedule=situationData.schedule;
+  const current=nowMin(),wake=parseTime(document.getElementById('wakeTime').value),directTarget=parseTime(document.getElementById('targetWake').value),derived=deriveTargetFromStart(),preferred=parseTime(document.getElementById('preferredBed').value),caffeine=parseTime(document.getElementById('caffeine').value);
+  const target=directTarget!==null?directTarget:(derived?derived.target:null);
   if(wake===null||target===null)return null;
+  if(directTarget===null&&derived)document.getElementById('targetWake').value=fmt(target);
+  const hasFixedStart=!!derived;
+  const targetSource=directTarget!==null?'직접 입력한 목표 기상시간':(derived?`${fmt(derived.start)} 일정에서 ${derived.prep}분을 뺀 자동 목표`:'목표 기상시간');
+  if(hasFixedStart&&(persona==='worker'||persona==='student')&&situation!=='recovery')schedule='must';
+  const actualScheduleLabel=hasFixedStart?(persona==='worker'?'출근 시간 기준':persona==='student'?'등교 시간 기준':'일정 시간 기준'):situationData.scheduleLabel;
   const nap=document.getElementById('nap').value,alcohol=document.getElementById('alcohol').value,sleepDebt=document.getElementById('sleepDebt').value,alarmStyle=document.getElementById('alarmStyle').value;
   let recommendedWake=target;
+  const delay=diffClock(wake,target);
   if(schedule==='none')recommendedWake=stepWake(wake,target,60+(situationData.wakeStepBonus||0));
-  if(schedule==='soft')recommendedWake=stepWake(wake,target,120+(situationData.wakeStepBonus||0));
-  if(schedule==='must'||situation==='important')recommendedWake=target;
-  if(situation==='allnight'&&schedule==='none')recommendedWake=stepWake(wake,target,40);
-  if(situation==='alcoholShift'&&schedule==='none')recommendedWake=stepWake(wake,target,90);
+  else if(schedule==='soft'){
+    if(situation==='late')recommendedWake=delay>90?target+30:target;
+    else if(situation==='allnight')recommendedWake=target+(delay>180?60:30);
+    else if(situation==='alcoholShift')recommendedWake=target+30;
+    else recommendedWake=target;
+  }
+  if(schedule==='must'||situation==='important'||hasFixedStart)recommendedWake=target;
   const wakeLine=targetTimelineTomorrow(current,recommendedWake);
   let need=450;if(persona==='student')need=480;if(situationData.needOverride)need=situationData.needOverride;if(schedule==='must'||situation==='important')need=420;if(sleepDebt==='high')need+=30;need+=situationData.needAdjust||0;
   let bedLine;
@@ -150,7 +194,9 @@ function makePlan(){
   if(schedule==='none')caffeineGuide='내일 일정이 없으면 카페인으로 억지 보정하지 말고, 첫 카페인은 기상 60분 뒤로 미루세요.';
   const lightGuide=`${fmt(recommendedWake)}~${fmt(recommendedWake+30)} 사이 창가·야외 빛 10~20분`;
   const score=rhythmScore(wakeDelay,sleepDuration,nap,alcohol,caffeineLate,schedule,alarmStyle,situation);
-  const base={mode,persona,schedule,scheduleLabel:situationData.scheduleLabel,situation,situationLabel:situationData.label,situationSummary:situationData.summary,situationDecision:situationData.decision,situationFocus:situationData.resultFocus,aiFocus:situationData.aiFocus,wake,target,recommendedWake,bedLine,preferred,caffeine,nap,alcohol,sleepDebt,alarmStyle,sleepDuration,wakeDelay,rhythmDrift:rhythmDriftText(wakeDelay),score,status:{title,cls},bedText:fmt(bedLine),targetText:fmt(target),wakeText:fmt(recommendedWake),sleepText:durationText(sleepDuration),alarms:`${fmt(alarmA)} / ${fmt(alarmB)} / ${fmt(alarmC)}`,finalLine:fmt(finalLine),caffeineGuide,lightGuide,personaLine:personaMorningLine(persona,recommendedWake),alarmGuide:alarmGuide(alarmStyle)};
+  const base={mode,persona,schedule,scheduleLabel:actualScheduleLabel,situation,situationLabel:situationData.label,targetSource,situationSummary:situationData.summary,situationDecision:situationData.decision,situationFocus:situationData.resultFocus,aiFocus:situationData.aiFocus,wake,target,recommendedWake,bedLine,preferred,caffeine,nap,alcohol,sleepDebt,alarmStyle,sleepDuration,wakeDelay,rhythmDrift:rhythmDriftText(wakeDelay),score,status:{title,cls},bedText:fmt(bedLine),targetText:fmt(target),wakeText:fmt(recommendedWake),sleepText:durationText(sleepDuration),alarms:`${fmt(alarmA)} / ${fmt(alarmB)} / ${fmt(alarmC)}`,finalLine:fmt(finalLine),caffeineGuide,lightGuide,personaLine:personaMorningLine(persona,recommendedWake),alarmGuide:alarmGuide(alarmStyle)};
+  base.estimatedDays=estimateRecoveryDays(base);
+  base.recoveryDaysText=base.estimatedDays===1?'1일 점검으로 충분':'약 '+base.estimatedDays+'일 관리 권장';
   base.decision=decisionText(base);
   base.actions=[];
   if(mode==='soon')base.actions.push(`지금은 추가 계산보다 ${fmt(bedLine)}부터 바로 취침 준비를 시작하세요.`);
@@ -170,7 +216,7 @@ function render(plan){
   lastPlan=plan;placeholder.style.display='none';resultContent.style.display='block';
   const bedLabel=plan.mode==='soon'?'지금부터 취침 준비':'오늘 잘 시간 추천';
   resultContent.innerHTML=`
-    <div class="status-box ${plan.status.cls}"><h3>${plan.status.title}</h3><p>${plan.situationLabel} · ${personaName(plan.persona)} · ${plan.scheduleLabel} 기준으로 계산했습니다.</p></div>
+    <div class="status-box ${plan.status.cls}"><h3>${plan.status.title}</h3><p>${plan.situationLabel} · ${personaName(plan.persona)} · ${plan.scheduleLabel} · ${plan.targetSource} 기준으로 계산했습니다.</p></div>
     <div class="guide"><h4>선택 상황 기준</h4><p>${plan.situationSummary}</p><p><b>이번 계산의 핵심:</b> ${plan.situationFocus}</p></div>
     <div class="score-row">
       <div class="score-card"><span>내 리듬 위치</span><strong>${plan.rhythmDrift}</strong><details><summary>위치 설명</summary><div class="details-body"><p>목표 기상시간과 오늘 기상시간을 비교해, 지금 생활 리듬이 목표보다 늦은 쪽인지 빠른 쪽인지 보여줍니다.</p><p><b>뒤로 밀림</b>이 크면 오늘 억지로 일찍 눕는 것보다 내일 기상시간을 먼저 고정하는 편이 안정적입니다.</p><p><b>앞당겨짐</b>이면 이미 몸이 이른 시간대에 맞춰져 있는 상태라, 밤에 너무 일찍 졸려 리듬이 다시 흔들리지 않게 유지 기준을 봅니다.</p></div></details></div>
@@ -180,11 +226,12 @@ function render(plan){
       <div class="result-item"><span>${bedLabel}</span><strong>${plan.bedText}</strong></div>
       <div class="result-item"><span>내일 일어날 시간 추천</span><strong>${plan.wakeText}</strong></div>
       <div class="result-item"><span>확보 수면</span><strong>${plan.sleepText}</strong></div>
+      <div class="result-item"><span>되돌리기 예상</span><strong>${plan.recoveryDaysText}</strong></div>
       <div class="result-item"><span>알람 후보</span><strong>${plan.alarms}</strong></div>
       <div class="result-item"><span>내일 아침 기준</span><strong>${plan.personaLine}</strong></div>
     </div>
     <div class="guide"><h4>조정 방향</h4><p><b>${plan.decision.title}</b></p><p>${plan.decision.body}</p></div>
-    <div class="upgrade-card"><h4>AI 7일 관리가 필요한 경우</h4><p>오늘 한 번 계산하고 끝내면 다시 밀릴 수 있습니다. AI는 오늘 밤 실행, 기상 실패 대비, 7일 복구 기준을 상황별로 묶어서 만듭니다.</p><ul><li>${plan.situationLabel}에 맞춘 실패 지점 차단</li><li>기상 실패 후 낮잠·카페인·오늘 밤 취침 복구 기준</li><li>최근 수면·기상 기록을 반영한 7일 관리 기준</li></ul></div>
+    <div class="upgrade-card"><h4>AI 생체 시계 되돌리기</h4><p>오늘 한 번 계산하고 끝내면 다시 밀릴 수 있습니다. AI는 현재 상태에 맞춰 필요한 기간을 1~7일 사이에서 판단하고, 매일 체크 결과로 다음날 기준을 바꿉니다.</p><ul><li>${plan.situationLabel}에 맞춘 실패 지점 차단</li><li>기상 실패 후 낮잠·카페인·오늘 밤 취침 복구 기준</li><li>예상 관리 기간: ${plan.recoveryDaysText}</li></ul></div>
   `;
   saveTempPlan(plan);renderRecords();
 }
@@ -231,9 +278,9 @@ function setSeven(data){localStorage.setItem('rhythmSeven',JSON.stringify(data))
 function renderSeven(){
   const box=document.getElementById('sevenStatus'); if(!box)return;
   const data=getSeven();
-  if(!data.active){box.innerHTML='<h4>현재 상태</h4><p>아직 7일 체크를 시작하지 않았습니다. AI 체크를 하루씩 쌓으면 다음날 기준을 더 구체적으로 잡을 수 있습니다.</p>';return}
+  if(!data.active){box.innerHTML='<h4>현재 상태</h4><p>아직 되돌리기 체크를 시작하지 않았습니다. 오늘 체크를 쌓으면 AI가 복구 기간과 다음날 기준을 다시 판단합니다.</p>';return}
   const last=data.logs&&data.logs.length?data.logs[0]:null;
-  box.innerHTML=`<h4>Day ${data.day} 진행 중</h4><p>오늘 체크 결과를 저장하면 다음 AI 체크에 반영됩니다.</p>${last?`<p><b>최근 체크:</b> ${last.text}</p>`:''}`;
+  box.innerHTML=`<h4>Day ${data.day} 진행 중</h4><p>오늘 체크 결과를 저장하면 AI가 내일 목표와 복구 기간을 다시 판단합니다.</p>${last?`<p><b>최근 체크:</b> ${last.text}</p>`:''}`;
 }
 const startSevenBtn=document.getElementById('startSevenBtn');
 if(startSevenBtn)startSevenBtn.addEventListener('click',()=>{
@@ -250,7 +297,7 @@ if(saveDayBtn)saveDayBtn.addEventListener('click',()=>{
   const logs=data.logs||[]; logs.unshift({date:new Date().toLocaleDateString('ko-KR'),text});
   const nextDay=Math.min(7,(data.day||1)+1);
   setSeven({active:true,day:nextDay,logs:logs.slice(0,10)});
-  const records=getRecords(); records.unshift({date:new Date().toLocaleDateString('ko-KR'),text:`7일 체크: ${text}`}); setRecords(records); renderRecords(); renderSeven();
+  const records=getRecords(); records.unshift({date:new Date().toLocaleDateString('ko-KR'),text:`되돌리기 체크: ${text}`}); setRecords(records); renderRecords(); renderSeven();
 });
 renderSeven();
 
@@ -258,7 +305,7 @@ function buildAiPrompt(){
   const plan=lastPlan||makePlan();if(!plan)return'';
   const records=getRecords().slice(0,5).map((r,i)=>`${i+1}. ${r.date} - ${r.text}`).join('\n') || '아직 저장된 기록 없음';
   const seven=getSeven();
-  const sevenLogs=(seven.logs||[]).slice(0,5).map((r,i)=>`${i+1}. ${r.date} - ${r.text}`).join('\n') || '아직 7일 체크 기록 없음';
+  const sevenLogs=(seven.logs||[]).slice(0,5).map((r,i)=>`${i+1}. ${r.date} - ${r.text}`).join('\n') || '아직 되돌리기 체크 기록 없음';
   return `너는 수면 리듬 관리 코치입니다. 의학적 진단처럼 말하지 말고 생활 리듬 조정 관점으로만 답해주세요. 기본 계산값을 반복하지 말고, 사용자가 실제로 실행할 행동 기준을 우선으로 답해주세요.
 
 [사용자 상황]
@@ -269,6 +316,7 @@ function buildAiPrompt(){
 - 내일 일정/상황 기준: ${plan.scheduleLabel}
 - 오늘 일어난 시간: ${fmt(plan.wake)}
 - 내일 목표 기상시간: ${plan.targetText}
+- 목표 산정 기준: ${plan.targetSource}
 - 오늘 원하는 취침시간: ${plan.preferred!==null?fmt(plan.preferred):'없음'}
 - 오늘 낮잠: ${plan.nap}
 - 술: ${plan.alcohol}
@@ -279,15 +327,16 @@ function buildAiPrompt(){
 [최근 기록]
 ${records}
 
-[7일 체크 상태]
+[생체 시계 되돌리기 체크 상태]
 - 진행 여부: ${seven.active?'진행 중':'미시작'}
 - 현재 일차: Day ${seven.day||1}
-- 최근 7일 체크: ${sevenLogs}
+- 최근 되돌리기 체크: ${sevenLogs}
 
 [계산 결과]
 - 현재 상태: ${plan.status.title}
 - 리듬 척도: ${plan.rhythmDrift}
 - 리듬 안정 점수: ${plan.score}점
+- 되돌리기 예상 기간: ${plan.recoveryDaysText}
 - 오늘 잘 시간 추천: ${plan.bedText}
 - 내일 일어날 시간 추천: ${plan.wakeText}
 - 확보 수면: ${plan.sleepText}
@@ -301,8 +350,8 @@ ${records}
 [답변 원칙]
 - 기본 계산 결과에 이미 나온 시간표만 반복하지 마세요.
 - 사용자가 실제로 실패하는 지점, 즉 잠이 안 옴·알람 끄고 다시 눕기·기상 실패·낮잠 과다를 막는 기준을 구체적으로 주세요.
-- 최근 기록과 7일 체크가 있으면 반드시 반영해서 조정하세요. 기록이 없으면 첫 사용 기준이라고 말하세요.
-- 7일 계획을 한 번에 길게 모두 쓰지 마세요. 오늘 Day ${seven.day||1}와 내일 조정 기준을 가장 구체적으로 쓰고, 나머지 기간은 방향만 짧게 말하세요.
+- 최근 기록과 되돌리기 체크가 있으면 반드시 반영해서 조정하세요. 기록이 없으면 첫 사용 기준이라고 말하세요.
+- 고정 7일 계획처럼 말하지 마세요. 상태가 가벼우면 1~2일, 심하면 3~7일로 필요한 기간을 능동적으로 판단하세요. 오늘 Day ${seven.day||1}와 내일 조정 기준을 가장 구체적으로 쓰세요.
 - 선택 상황(${plan.situationLabel})에 맞는 조언이 반드시 달라져야 합니다. 늦잠, 밤샘, 술자리·마감근무, 시험·오픈 전날을 같은 방식으로 답하지 마세요. 답변의 핵심은 ${plan.aiFocus}입니다.
 
 [답변 형식]
@@ -366,7 +415,7 @@ ${records}
 11. 하루 체크 기반 다음 단계
 - 오늘 Day ${seven.day||1}: 반드시 지킬 기준
 - 내일 조정: 성공/실패에 따라 기상시간을 당길지 유지할지
-- 남은 기간 방향: 7일 전체를 길게 나열하지 말고, 다시 밀리지 않는 기준만 짧게
+- 복구 기간 판단: 현재 상태가 1~7일 중 어느 정도 관리가 필요한지와 그 이유
 
 금지 표현: 핸드폰 하지 마세요, 일찍 주무세요, 알람 많이 맞추세요 같은 뻔한 말.
 말투는 간결하고 현실적으로 해주세요.`
