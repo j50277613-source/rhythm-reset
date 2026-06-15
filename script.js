@@ -39,7 +39,7 @@ function stepWake(todayWake,target,step){const d=diffClock(target,todayWake);if(
 function personaName(p){return p==='worker'?'직장인':p==='student'?'학생':'자율 생활형'}
 function personaConfig(p){
   if(p==='worker')return{hint:'출근 준비시간과 지각 방지를 우선으로 계산합니다.'};
-  if(p==='student')return{hint:'오전 집중력과 가벼운 움직임 시간을 함께 계산합니다.'};
+  if(p==='student')return{hint:'등교 준비시간과 오전 학업 컨디션을 우선으로 계산합니다.'};
   return{hint:'강제 일정이 적어도 리듬이 뒤로 밀리지 않게 계산합니다.'};
 }
 function updatePersonaHint(){document.getElementById('personaHint').textContent=personaConfig(document.getElementById('persona').value).hint}
@@ -48,7 +48,7 @@ function rhythmDriftText(min){const abs=Math.abs(Math.round(min));if(abs<30)retu
 function rhythmScore(drift,sleep,nap,alcohol,caffeineLate,schedule,alarmStyle){let score=100;score-=Math.min(45,Math.abs(drift)/10);if(sleep<360)score-=18;if(sleep<300)score-=12;if(nap==='long'||nap==='late')score-=10;if(alcohol==='yes')score-=8;if(caffeineLate)score-=8;if(schedule==='must'&&sleep<360)score-=8;if(alarmStyle==='miss')score-=10;if(alarmStyle==='bedphone'||alarmStyle==='snooze')score-=6;return Math.max(0,Math.min(100,Math.round(score)))}
 function personaMorningLine(persona,recommendedWake){
   if(persona==='worker')return `직장인: 준비 시작 ${fmt(recommendedWake+10)}, 첫 카페인은 ${fmt(recommendedWake+60)} 이후`;
-  if(persona==='student')return `학생: 카페인보다 ${fmt(recommendedWake+20)}~${fmt(recommendedWake+40)} 가벼운 움직임 먼저`;
+  if(persona==='student')return `학생: 준비 시작 ${fmt(recommendedWake+15)}, 첫 집중은 ${fmt(recommendedWake+60)} 이후`; 
   return `자율 생활형: ${fmt(recommendedWake+15)} 이후 다시 눕지 않기`;
 }
 function alarmGuide(alarmStyle){
@@ -170,7 +170,93 @@ document.getElementById('savePlanBtn').addEventListener('click',()=>{if(!lastPla
 document.getElementById('clearRecordsBtn').addEventListener('click',()=>{localStorage.removeItem('rhythmRecords');renderRecords()});
 function buildAiPrompt(){
   const plan=lastPlan||makePlan();if(!plan)return'';
-  return `너는 수면 리듬 관리 코치입니다. 의학적 진단처럼 말하지 말고 생활 리듬 조정 관점으로만 답해주세요.\n\n[사용자 상황]\n- 사용 상황: ${plan.mode==='soon'?'곧 잘 예정':'미리 계획 중'}\n- 생활 유형: ${personaName(plan.persona)}\n- 내일 일정: ${document.getElementById('schedule').selectedOptions[0].textContent}\n- 오늘 일어난 시간: ${fmt(plan.wake)}\n- 내일 목표 기상시간: ${plan.targetText}\n- 오늘 원하는 취침시간: ${plan.preferred!==null?fmt(plan.preferred):'없음'}\n- 오늘 낮잠: ${plan.nap}\n- 술: ${plan.alcohol}\n- 최근 3일 수면부족: ${plan.sleepDebt}\n- 기상 반응: ${document.getElementById('alarmStyle').selectedOptions[0].textContent}\n- 오늘 마지막 카페인: ${plan.caffeine!==null?fmt(plan.caffeine):'모름'}\n\n[계산 결과]\n- 현재 상태: ${plan.status.title}\n- 생체 리듬 밀림: ${plan.rhythmDrift}\n- 리듬 안정 점수: ${plan.score}점\n- 오늘 잘 시간 추천: ${plan.bedText}\n- 내일 일어날 시간 추천: ${plan.wakeText}\n- 확보 수면: ${plan.sleepText}\n- 알람 후보: ${plan.alarms}\n- 최후 기상선: ${plan.finalLine}\n- 조정 방향: ${plan.decision.title} / ${plan.decision.body}\n- 내일 카페인 기준: ${plan.caffeineGuide}\n\n[답변 형식]\n1. 맨 위 제목을 반드시 \"3줄 요약\"이라고 쓰고, 3줄만 작성해주세요.\n2. \"오늘 밤 실행 순서\"를 시간대별로 작성해주세요.\n3. \"씻기 기준\"을 작성해주세요. 차가운 물/따뜻한 물/미지근한 물 중 무엇이 나은지 이유와 함께 정리해주세요.\n4. \"쉬는 방식\"을 작성해주세요. 침대에 눕는 휴식인지, 의자에서 쉬는지, 조명은 어떻게 하는지 구체적으로 말해주세요.\n5. \"취침 전 세팅\"을 작성해주세요. 알람 위치, 방 온도 느낌, 조명, 물, 충전 위치까지 포함해주세요.\n6. \"알람 3개의 역할\"을 나눠주세요. 단순히 많이 맞추라는 말은 금지입니다.\n7. \"잠이 안 올 때 플랜 B\"를 작성해주세요. 몇 분까지 누워보고, 그 뒤 어떤 행동을 하고, 다시 누울 기준을 말해주세요.\n8. \"기상 후 체크할 3가지\"와 체크 결과에 따른 다음날 취침·기상 조정 기준을 제시해주세요.\n9. ${personaName(plan.persona)} 기준으로 실제로 달라지는 행동 2개를 추가해주세요.\n\n금지 표현: 핸드폰 하지 마세요, 일찍 주무세요, 알람 많이 맞추세요 같은 뻔한 말.\n말투는 간결하고 현실적으로 해주세요.`
+  return `너는 수면 리듬 관리 코치입니다. 의학적 진단처럼 말하지 말고 생활 리듬 조정 관점으로만 답해주세요.
+
+[사용자 상황]
+- 사용 상황: ${plan.mode==='soon'?'곧 잘 예정':'미리 계획 중'}
+- 생활 유형: ${personaName(plan.persona)}
+- 내일 일정: ${document.getElementById('schedule').selectedOptions[0].textContent}
+- 오늘 일어난 시간: ${fmt(plan.wake)}
+- 내일 목표 기상시간: ${plan.targetText}
+- 오늘 원하는 취침시간: ${plan.preferred!==null?fmt(plan.preferred):'없음'}
+- 오늘 낮잠: ${plan.nap}
+- 술: ${plan.alcohol}
+- 최근 3일 수면부족: ${plan.sleepDebt}
+- 기상 반응: ${document.getElementById('alarmStyle').selectedOptions[0].textContent}
+- 오늘 마지막 카페인: ${plan.caffeine!==null?fmt(plan.caffeine):'모름'}
+
+[계산 결과]
+- 현재 상태: ${plan.status.title}
+- 생체 리듬 밀림: ${plan.rhythmDrift}
+- 리듬 안정 점수: ${plan.score}점
+- 오늘 잘 시간 추천: ${plan.bedText}
+- 내일 일어날 시간 추천: ${plan.wakeText}
+- 확보 수면: ${plan.sleepText}
+- 알람 후보: ${plan.alarms}
+- 최후 기상선: ${plan.finalLine}
+- 조정 방향: ${plan.decision.title} / ${plan.decision.body}
+- 내일 아침 기준: ${plan.personaLine}
+
+[답변 형식]
+반드시 아래 번호 체계를 지켜주세요. 큰 제목은 1, 2, 3처럼 쓰고, 세부 항목은 1-1, 1-2처럼 써주세요.
+
+1. 3줄 요약
+1-1. 지금 가장 중요한 판단 1줄
+1-2. 오늘 밤 핵심 행동 1줄
+1-3. 내일 아침 실패 방지 기준 1줄
+
+2. 오늘 밤 실행 순서
+2-1. 지금부터 취침 준비 전까지 해야 할 행동
+2-2. 씻는 시간과 방식
+2-3. 불 끄기 전 마지막 세팅
+2-4. 실제로 눕는 기준
+
+3. 씻기 기준
+3-1. 찬물/미지근한 물/따뜻한 물 중 무엇이 나은지
+3-2. 샤워 길이와 머리 말리는 기준
+3-3. 몸이 더워지거나 각성될 때 조정법
+
+4. 쉬는 방식
+4-1. 침대에서 쉴지, 의자나 바닥 쿠션에서 쉴지
+4-2. 조명 밝기 기준
+4-3. 생각이 많을 때 처리 방식
+
+5. 취침 전 세팅
+5-1. 알람 위치
+5-2. 충전 위치
+5-3. 물, 조명, 방 온도 느낌
+5-4. 알람을 끄고 다시 눕지 않게 하는 장치
+
+6. 알람 3개의 역할
+6-1. 첫 알람의 역할
+6-2. 실제 기상 알람의 역할
+6-3. 최후 기상선 알람의 역할
+단, 알람을 많이 맞추라는 식으로 말하지 마세요. 각 알람의 목적을 분리하세요.
+
+7. 잠이 안 올 때 플랜 B
+7-1. 몇 분까지 누워볼지
+7-2. 그 시간이 지나면 무엇을 할지
+7-3. 다시 눕는 기준
+7-4. 그래도 못 잤을 때 내일 낮잠과 카페인 기준
+
+8. 실제 기상 실패 시 플랜 B
+8-1. 목표 기상에 못 일어났을 때 바로 해야 할 것
+8-2. 지각/일정 실패를 줄이는 최소 행동
+8-3. 낮잠 가능 여부와 제한 시간
+8-4. 오늘 밤 취침을 더 당길지, 같은 시간으로 고정할지
+
+9. 기상 후 체크할 것
+9-1. 실제 기상시간
+9-2. 알람 미룬 횟수
+9-3. 기상 후 10분 멍함 점수
+9-4. 체크 결과에 따라 다음날 취침·기상을 어떻게 조정할지
+
+10. ${personaName(plan.persona)} 기준 추가 행동
+10-1. 생활 유형에 맞는 오전 첫 행동
+10-2. 생활 유형에 맞는 카페인/운동/이동 기준
+
+금지 표현: 핸드폰 하지 마세요, 일찍 주무세요, 알람 많이 맞추세요 같은 뻔한 말.
+말투는 간결하고 현실적으로 해주세요.`
 }
 document.getElementById('makeAiPromptBtn').addEventListener('click',()=>{
   document.querySelectorAll('.time-input').forEach(normalizeInput);
