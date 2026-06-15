@@ -74,8 +74,12 @@
     .record-list{display:grid;gap:8px;margin-top:12px}.record{border:1px solid var(--line);border-radius:14px;background:#fff;padding:11px 12px;font-size:13px;color:#333}
     .ai-box{display:none;margin-top:12px}.error-text{display:none;margin-top:8px;color:#b42318;font-size:13px;font-weight:700}
     .use-cases{width:min(1080px,calc(100% - 30px));margin:10px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-    .case-pill{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;font-size:13px;color:#333;box-shadow:0 8px 22px rgba(0,0,0,.04)}
+    .case-pill{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;font-size:13px;color:#333;box-shadow:0 8px 22px rgba(0,0,0,.04);text-align:left;font-weight:500}
+    button.case-pill{cursor:pointer;font-family:inherit}
     .case-pill b{display:block;font-size:14px;color:#171717;margin-bottom:3px}
+    .case-pill.active{border-color:#171717;box-shadow:0 0 0 2px #171717 inset;background:#fffef9}
+    .ad-slot{margin:14px 0 0;border:1px dashed var(--line);border-radius:16px;background:#faf9f5;min-height:74px;display:flex;align-items:center;justify-content:center;text-align:center;color:#8a8176;font-size:13px;flex-direction:column;gap:3px}
+    .ad-slot b{color:#555;font-size:13px}
     .upgrade-card{border:1px solid var(--line);border-radius:17px;background:#fffef9;padding:14px;margin-top:12px}
     .upgrade-card h4{margin:0 0 7px;font-size:16px}.upgrade-card p{margin:6px 0;color:#333}.upgrade-card ul{margin:8px 0 0;padding-left:18px}.upgrade-card li{margin:5px 0}
     .ai-diff{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
@@ -92,11 +96,11 @@
 <h1>오늘 몇 시에 자야 할까?</h1>
 <p class="lead">늦잠, 밤샘, 술자리, 마감근무, 시험 전날처럼 리듬이 흔들린 날에 오늘 잘 시간과 내일 기상 기준을 잡아줍니다.</p>
 </header>
-<section class="use-cases">
-  <div class="case-pill"><b>늦잠 잔 날</b>오늘 밤 취침과 내일 기상 기준 재계산</div>
-  <div class="case-pill"><b>밤샘·게임 후</b>무리한 조기 기상 대신 손실 줄이는 기준</div>
-  <div class="case-pill"><b>술자리·마감근무</b>수면 질 흔들린 다음날 복구 기준</div>
-  <div class="case-pill"><b>시험·오픈 전날</b>최후 기상선과 알람 역할 분리</div>
+<section class="use-cases" aria-label="상황 선택">
+  <button type="button" class="case-pill active" data-situation="late"><b>늦잠 잔 날</b>오늘 밤 취침과 내일 기상 기준 재계산</button>
+  <button type="button" class="case-pill" data-situation="allnight"><b>밤샘·게임 후</b>무리한 조기 기상 대신 손실 줄이는 기준</button>
+  <button type="button" class="case-pill" data-situation="alcoholShift"><b>술자리·마감근무</b>수면 질 흔들린 다음날 복구 기준</button>
+  <button type="button" class="case-pill" data-situation="important"><b>시험·오픈 전날</b>최후 기상선과 알람 역할 분리</button>
 </section>
 <main>
 <section class="wrap">
@@ -203,6 +207,7 @@
 <button class="primary" id="calculateBtn" type="button">내 리듬 계산하기</button>
 <button class="secondary" id="resetBtn" type="button">초기화</button>
 </div>
+<div class="ad-slot" id="calcAdSlot"><b>광고 영역</b><span>AdSense 승인 후 계산 버튼 근처에 표시됩니다.</span></div>
 </form>
 </div>
 <div class="card result" id="resultCard">
@@ -258,7 +263,7 @@
 <section class="below">
 <div class="card">
 <h2 class="section-title">기록 기반 플러스 기능</h2>
-<p class="small-text">한 번 계산하고 끝내는 구조가 아니라, 실제 수면·기상 기록이 쌓일수록 다음 플랜을 더 개인화하는 방향입니다.</p>
+<p class="small-text">실제 구독 결제는 로그인·결제 검증·사용량 제한이 붙은 뒤 연결하는 것이 안전합니다. 지금은 기능 가치 검증용 화면입니다.</p>
 <div class="feature-grid">
 <div class="feature"><b>광고 제거</b>계산과 AI 플랜 사이에 광고 없이 바로 확인</div>
 <div class="feature"><b>AI 하루 3회</b>취침 전, 기상 후, 실패 시 재계산</div>
@@ -272,5 +277,6 @@
 </main>
 <footer>© <span id="year"></span> 리듬리셋. 수면 리듬 계산기.</footer>
 
+<script defer src="/_vercel/insights/script.js"></script>
 <script defer="True" src="script.js"></script></body>
 </html>

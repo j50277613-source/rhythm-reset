@@ -1,0 +1,12 @@
+리듬리셋 방문자 수 확인 방법
+
+1. Vercel 프로젝트로 이동
+2. Analytics 또는 Web Analytics 메뉴 클릭
+3. Enable Web Analytics 활성화
+4. GitHub에 v25 전체 파일 업로드 후 재배포
+5. 방문자 수, 페이지뷰, 유입 경로는 Vercel 대시보드에서만 확인
+
+주의:
+- 웹사이트 화면 안에 방문자 수를 직접 보여주지 않습니다.
+- 방문자 수는 사이트 소유자인 주원님만 Vercel 대시보드에서 확인하는 방식입니다.
+- index.html에는 /_vercel/insights/script.js 스크립트가 들어가 있습니다.
