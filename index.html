@@ -50,10 +50,11 @@
 
     h1 {
       margin: 20px auto 10px;
-      max-width: 740px;
-      font-size: clamp(32px, 7vw, 58px);
-      line-height: 1.08;
-      letter-spacing: -1.7px;
+      max-width: 620px;
+      font-size: clamp(30px, 5.8vw, 48px);
+      line-height: 1.14;
+      letter-spacing: -1.1px;
+      font-weight: 750;
     }
 
     .lead {
@@ -112,9 +113,9 @@
     }
 
     input.time-input {
-      font-size: 19px;
-      font-weight: 850;
-      letter-spacing: 0.2px;
+      font-size: 17px;
+      font-weight: 650;
+      letter-spacing: 0;
       font-variant-numeric: tabular-nums;
     }
 
@@ -346,7 +347,7 @@
 <body>
   <header>
     <div class="logo">🌙 리듬리셋</div>
-    <h1>무너진 수면 리듬을 목표 기상시간에 맞춰보세요</h1>
+    <h1>수면 리듬을 다시 맞추세요</h1>
     <p class="lead">늦잠, 야근, 공부, 게임, 술자리로 밀린 리듬을 입력하면 오늘의 취침·기상·알람 루틴을 자동으로 계산합니다.</p>
   </header>
 
@@ -608,11 +609,24 @@
       if (important) mainAdvice = '내일 일정이 있으므로 수면시간을 완벽히 채우는 것보다 목표 기상 성공을 우선합니다.';
       if (alcohol) mainAdvice += ' 술을 마신 날은 수면 질이 떨어질 수 있어 기상 난도가 올라갈 수 있습니다.';
 
-      let actionPoint = '추천 취침보다 30분 이상 일찍 눕기보다, 정해진 시간에 눕고 알람 시간을 고정하세요.';
-      if (delay > 120 && !important) actionPoint = '오늘은 취침을 무리하게 앞당기지 말고, 내일 기상 시간을 먼저 당기는 방식으로 접근하세요.';
-      if (important) actionPoint = '최후 알람은 목표 기상 10분 뒤까지만 두고, 침대 밖으로 나가는 행동을 먼저 고정하세요.';
-      if (nap === 'late') actionPoint = '오후 늦은 낮잠 때문에 밤잠이 밀릴 수 있으니, 오늘 취침 목표는 보수적으로 잡았습니다.';
-      if (alcohol) actionPoint = '오늘은 추가 음주와 야식을 피하고, 물을 마신 뒤 기상 알람을 3개로 나누는 편이 낫습니다.';
+      let point1 = `오늘은 ${fmt(recommendedBed)} 전후로 눕고, ${fmt(recommendedWake)} 기상을 1차 목표로 잡으세요.`;
+      let point2 = '기상 후 30분 안에 창가나 야외에서 빛을 먼저 보고, 다시 눕지 않는 것이 핵심입니다.';
+      let point3 = delay > 60 ? '내일 성공하면 다음날 기상 시간을 30~45분 더 당겨서 목표 시간에 접근하세요.' : '같은 기상 시간을 2~3일 반복해서 리듬을 고정하세요.';
+
+      if (delay > 120 && !important) {
+        point1 = `오늘은 한 번에 ${fmt(targetWake)}로 당기지 말고, ${fmt(recommendedWake)} 기상부터 성공하는 쪽이 현실적입니다.`;
+        point2 = `추천 취침 ${fmt(recommendedBed)}보다 1시간 이상 일찍 누우면 뒤척일 가능성이 높으니, 취침 목표를 무리하게 앞당기지 마세요.`;
+      }
+      if (important) {
+        point1 = `내일은 일정이 있으므로 ${fmt(targetWake)} 기상을 고정하고, 최후 알람은 ${fmt(targetWake + 10)}까지만 두세요.`;
+        point2 = '잠이 부족해도 기상 시간을 먼저 지키는 날입니다. 낮잠은 필요하면 15시 전 15~20분까지만 허용하세요.';
+      }
+      if (nap === 'late') {
+        point2 = '오후 늦은 낮잠 때문에 잠드는 시간이 밀릴 수 있어, 오늘 취침 목표는 평소보다 보수적으로 잡았습니다.';
+      }
+      if (alcohol) {
+        point2 = '술을 마신 날은 수면 질이 떨어질 수 있으니, 기상 직후 물을 마시고 밝은 빛을 보는 루틴을 먼저 잡으세요.';
+      }
 
       return {
         delay,
@@ -626,8 +640,9 @@
         caffeineWarning,
         napGuide,
         lightGuide: `${fmt(lightStart)}~${fmt(lightEnd)} 사이 햇빛 10~20분`,
-        actionPoint,
-        tomorrow: delay > 60 ? '내일 성공하면 다음날 기상 시간을 30~45분 더 당기기' : '같은 시간에 2~3일 반복해서 리듬 고정하기'
+        point1,
+        point2,
+        point3
       };
     }
 
@@ -652,26 +667,13 @@
         <div class="guide">
           <h4>오늘 조정 포인트</h4>
           <ul>
-            <li>${plan.actionPoint}</li>
-            <li>내일 목표: ${plan.tomorrow}</li>
+            <li>${plan.point1}</li>
+            <li>${plan.point2}</li>
+            <li>${plan.point3}</li>
             ${plan.caffeineWarning ? `<li>${plan.caffeineWarning}</li>` : ''}
           </ul>
         </div>
-
-        <div class="actions">
-          <button class="secondary" type="button" id="copyBtn">결과 복사</button>
-          <span class="copy-ok" id="copyOk">복사 완료</span>
-        </div>
       `;
-
-      document.getElementById('copyBtn').addEventListener('click', () => {
-        const text = `리듬리셋 결과\n\n${plan.status.title}\n${plan.stateText}\n\n추천 취침: ${plan.recommendedBed}\n추천 기상: ${plan.recommendedWake}\n알람 후보: ${plan.alarms}\n카페인: ${plan.caffeineGuide}\n낮잠: ${plan.napGuide}\n아침 빛: ${plan.lightGuide}\n오늘 조정 포인트: ${plan.actionPoint}\n내일 목표: ${plan.tomorrow}`;
-        navigator.clipboard.writeText(text).then(() => {
-          const ok = document.getElementById('copyOk');
-          ok.style.display = 'inline';
-          setTimeout(() => ok.style.display = 'none', 1700);
-        });
-      });
     }
 
     form.addEventListener('submit', (e) => {
