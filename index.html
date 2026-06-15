@@ -73,9 +73,11 @@
     .check-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
     .record-list{display:grid;gap:8px;margin-top:12px}.record{border:1px solid var(--line);border-radius:14px;background:#fff;padding:11px 12px;font-size:13px;color:#333}
     .ai-box{display:none;margin-top:12px}.error-text{display:none;margin-top:8px;color:#b42318;font-size:13px;font-weight:700}
-    .use-cases{width:min(1080px,calc(100% - 30px));margin:10px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-    .case-pill{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;font-size:13px;color:#333;box-shadow:0 8px 22px rgba(0,0,0,.04)}
+    .use-cases{width:min(1080px,calc(100% - 30px));margin:10px auto 0;display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+    .case-pill{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;font-size:13px;color:#333;box-shadow:0 8px 22px rgba(0,0,0,.04);text-align:left;cursor:pointer}
     .case-pill b{display:block;font-size:14px;color:#171717;margin-bottom:3px}
+    .case-pill.active{border-color:#202020;background:#f1eee7;box-shadow:0 8px 22px rgba(0,0,0,.08)}
+    .case-pill:focus{outline:2px solid #202020;outline-offset:2px}
     .upgrade-card{border:1px solid var(--line);border-radius:17px;background:#fffef9;padding:14px;margin-top:12px}
     .upgrade-card h4{margin:0 0 7px;font-size:16px}.upgrade-card p{margin:6px 0;color:#333}.upgrade-card ul{margin:8px 0 0;padding-left:18px}.upgrade-card li{margin:5px 0}
     .ai-diff{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
@@ -90,13 +92,14 @@
 <header>
 <div class="logo">🌙 리듬리셋</div>
 <h1>오늘 몇 시에 자야 할까?</h1>
-<p class="lead">리듬이 흔들린 날을 선택하면, 오늘 잘 시간·내일 기상·복구 기준이 상황별로 달라집니다.</p>
+<p class="lead">오늘 상황을 고르면, 오늘 잘 시간·내일 기상·복구 기준이 상황별로 달라집니다.</p>
 </header>
-<section class="use-cases">
-  <div class="case-pill"><b>늦잠 잔 날</b>오늘 밤 취침과 내일 기상 기준 재계산</div>
-  <div class="case-pill"><b>밤샘·게임 후</b>무리한 조기 기상 대신 손실 줄이는 기준</div>
-  <div class="case-pill"><b>술자리·마감근무</b>수면 질 흔들린 다음날 복구 기준</div>
-  <div class="case-pill"><b>시험·오픈 전날</b>최후 기상선과 알람 역할 분리</div>
+<section class="use-cases" aria-label="오늘 상황 선택">
+  <button type="button" class="case-pill active" data-situation="recovery"><b>일정 없음·리듬 회복</b>무리한 기상보다 생활 리듬 복구 우선</button>
+  <button type="button" class="case-pill" data-situation="late"><b>늦잠 잔 날</b>낮잠 차단과 내일 기상 고정 우선</button>
+  <button type="button" class="case-pill" data-situation="allnight"><b>밤샘·게임 후</b>수면 손실을 줄이고 재밀림 방지</button>
+  <button type="button" class="case-pill" data-situation="alcoholShift"><b>술자리·마감근무</b>아침 멍함과 낮잠 과다 방지</button>
+  <button type="button" class="case-pill" data-situation="important"><b>시험·오픈 전날</b>무조건 기상과 최후 기상선 우선</button>
 </section>
 <main>
 <section class="wrap">
@@ -131,12 +134,7 @@
 <input class="time-input" id="targetWake" inputmode="text" placeholder="예: 05:00 또는 5시" required="" type="text"/>
 </div>
 <div class="full">
-<label for="schedule">내일 일정</label>
-<select id="schedule">
-<option value="none">내일 일정 없음</option>
-<option value="soft">가능하면 맞추고 싶음</option>
-<option value="must">무조건 일어나야 함</option>
-</select>
+<p class="small-text">내일 일정 기준은 위 상황 카드에 함께 반영됩니다. 시험·오픈 전날은 무조건 기상 우선, 일정 없음은 리듬 회복 우선으로 계산합니다.</p>
 </div>
 <div class="full">
 <label for="preferredBed">오늘 원하는 취침시간</label>
@@ -229,16 +227,27 @@
 <div class="actions"><button class="ghost" id="clearRecordsBtn" type="button">기록 비우기</button></div>
 </div>
 </section>
-<section class="below">
+<section class="below two-grid">
+<div class="card">
+<h2 class="section-title">7일 리듬 체크</h2>
+<p class="small-text">AI 플랜은 한 번에 7일치를 다 보는 방식이 아니라, 하루씩 체크해서 다음날 기준을 다시 잡는 구조입니다.</p>
+<div class="guide" id="sevenStatus"><h4>현재 상태</h4><p>아직 7일 체크를 시작하지 않았습니다.</p></div>
+<div class="check-grid">
+<div><label for="dayOutcome">오늘 결과</label><select id="dayOutcome"><option value="success">계획대로 일어남</option><option value="late30">30분 이상 늦음</option><option value="fail">목표 기상 실패</option></select></div>
+<div><label for="dayNap">오늘 낮잠</label><select id="dayNap"><option value="none">없음</option><option value="short">20분 이내</option><option value="long">길게 잠</option></select></div>
+<div><label for="dayCaffeine">카페인</label><select id="dayCaffeine"><option value="ok">기준 안에서 마심</option><option value="late">늦게 마심</option><option value="none">안 마심</option></select></div>
+</div>
+<div class="actions"><button class="primary" id="startSevenBtn" type="button">7일 체크 시작</button><button class="ghost" id="saveDayBtn" type="button">오늘 체크 저장</button></div>
+</div>
 <div class="card">
 <h2 class="section-title">AI 7일 리듬 관리</h2>
-<p class="small-text">AI 플랜은 오늘 밤 한 번의 조언이 아니라, 선택한 상황과 저장된 수면·기상 기록을 바탕으로 7일 동안 다시 밀리지 않게 관리하는 방향으로 만듭니다.</p>
+<p class="small-text">선택한 상황과 수면·기상 기록을 바탕으로 오늘 할 일과 내일 조정 기준을 만듭니다. 7일 전체를 한 번에 끝내지 않고, 매일 체크해서 수정하는 방식입니다.</p>
 <div class="feature-grid">
-<div class="feature"><b>오늘 밤 실행</b>씻기, 휴식, 방 세팅, 눕는 기준</div>
-<div class="feature"><b>기상 실패 대비</b>못 일어났을 때 낮잠·카페인·밤 복구 기준</div>
-<div class="feature"><b>7일 관리 기준</b>1일차, 2~3일차, 4~7일차 복구 흐름</div>
-<div class="feature"><b>기록 반영</b>수면·기상 기록이 쌓이면 더 개인화</div>
-<div class="feature"><b>플러스 후보</b>광고 제거, AI 하루 3회, 최근 7일 변화</div>
+<div class="feature"><b>오늘 실행</b>씻기, 휴식, 방 세팅, 눕는 기준</div>
+<div class="feature"><b>기상 실패 대비</b>못 일어났을 때 낮잠·카페인·밤 복구</div>
+<div class="feature"><b>하루 체크</b>실제 기상 결과에 따라 다음날 조정</div>
+<div class="feature"><b>7일 변화</b>리듬이 당겨지는지 밀리는지 확인</div>
+<div class="feature"><b>패턴 반영</b>알람 습관과 낮잠 기록 반영</div>
 </div>
 <details>
 <summary>AI 플랜 예시 보기</summary>
@@ -246,14 +255,14 @@
 <div class="example">
 <h4>AI 7일 관리 예시</h4>
 <ol>
-<li><b>1. 오늘 밤 실행 순서</b><br/>- 준비: 내일 입을 옷과 가방을 문 앞에 둡니다.<br/>- 씻기: 미지근한 물로 짧게 씻고 몸이 더워지면 5분 식힌 뒤 눕습니다.<br/>- 눕는 기준: 20분 넘게 못 자면 침대 밖에서 조도 낮게 10분 쉬었다가 돌아옵니다.</li>
-<li><b>2. 기상 실패 대비</b><br/>- 알람 위치: 실제 기상 알람은 침대에서 팔이 닿지 않는 곳에 둡니다.<br/>- 못 일어났을 때: 늦게 일어난 시간을 기록하고 낮잠은 15:00 전 20분 이내로 제한합니다.<br/>- 밤 복구: 오늘 밤 취침을 무리하게 당기지 말고 같은 기상시간을 한 번 더 고정합니다.</li>
-<li><b>3. 7일 리듬 관리</b><br/>- 1일차: 기상 성공 여부만 확인합니다.<br/>- 2~3일차: 실패하면 같은 시간 고정, 성공하면 30분 당깁니다.<br/>- 4~7일차: 주말 늦잠과 낮잠으로 다시 밀리지 않는 기준을 잡습니다.</li>
+<li><b>1. 오늘 밤 실행</b><br/>- 준비: 내일 입을 옷과 가방을 문 앞에 둡니다.<br/>- 씻기: 미지근한 물로 짧게 씻고 몸이 더우면 5분 식힌 뒤 눕습니다.<br/>- 눕는 기준: 20분 넘게 못 자면 침대 밖에서 조도 낮게 10분 쉬었다가 돌아옵니다.</li>
+<li><b>2. 내일 아침 실패 대비</b><br/>- 알람 위치: 실제 기상 알람은 침대에서 팔이 닿지 않는 곳에 둡니다.<br/>- 못 일어났을 때: 늦게 일어난 시간을 기록하고 낮잠은 15:00 전 20분 이내로 제한합니다.<br/>- 밤 복구: 취침을 무리하게 당기지 말고 같은 기상시간을 한 번 더 고정합니다.</li>
+<li><b>3. 하루 체크 기준</b><br/>- 성공: 다음날 15~30분 당깁니다.<br/>- 30분 이상 늦음: 같은 시간을 한 번 더 고정합니다.<br/>- 실패: 낮잠·카페인·취침 기준을 다시 계산합니다.</li>
 </ol>
 </div>
 </div>
 </details>
-<div class="actions"><button class="secondary" id="makeAiPlanBtn" type="button">AI 7일 플랜 만들기</button><button class="ghost" id="makeAiPromptBtn" type="button">프롬프트 만들기</button><button class="ghost" id="copyAiPromptBtn" type="button">복사</button></div>
+<div class="actions"><button class="secondary" id="makeAiPlanBtn" type="button">오늘 AI 체크 만들기</button><button class="ghost" id="makeAiPromptBtn" type="button">프롬프트 만들기</button><button class="ghost" id="copyAiPromptBtn" type="button">복사</button></div>
 <div class="ai-box" id="aiBox"><textarea id="aiPrompt" readonly=""></textarea><p class="small-text" id="copyState"></p></div>
 </div>
 </section>
