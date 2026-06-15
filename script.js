@@ -47,9 +47,9 @@ document.getElementById('persona').addEventListener('change',updatePersonaHint);
 function rhythmDriftText(min){const abs=Math.abs(Math.round(min));if(abs<30)return '목표와 거의 맞음';return `약 ${minutesText(abs)} ${min>0?'뒤로 밀림':'앞당겨짐'}`}
 function rhythmScore(drift,sleep,nap,alcohol,caffeineLate,schedule,alarmStyle){let score=100;score-=Math.min(45,Math.abs(drift)/10);if(sleep<360)score-=18;if(sleep<300)score-=12;if(nap==='long'||nap==='late')score-=10;if(alcohol==='yes')score-=8;if(caffeineLate)score-=8;if(schedule==='must'&&sleep<360)score-=8;if(alarmStyle==='miss')score-=10;if(alarmStyle==='bedphone'||alarmStyle==='snooze')score-=6;return Math.max(0,Math.min(100,Math.round(score)))}
 function personaMorningLine(persona,recommendedWake){
-  if(persona==='worker')return `직장인: 준비 시작 ${fmt(recommendedWake+10)}, 첫 카페인은 ${fmt(recommendedWake+60)} 이후`;
-  if(persona==='student')return `학생: 준비 시작 ${fmt(recommendedWake+15)}, 첫 집중은 ${fmt(recommendedWake+60)} 이후`; 
-  return `자율 생활형: ${fmt(recommendedWake+15)} 이후 다시 눕지 않기`;
+  if(persona==='worker')return `직장인: ${fmt(recommendedWake+10)} 준비 시작, 출근길·창가에서 빛 10분, 첫 카페인은 ${fmt(recommendedWake+60)} 이후`;
+  if(persona==='student')return `학생: ${fmt(recommendedWake+15)} 등교 준비, 이동 중 빛 10분, 첫 집중은 ${fmt(recommendedWake+60)} 이후`; 
+  return `자율 생활형: ${fmt(recommendedWake+15)}까지 세면·물 마시기, ${fmt(recommendedWake+30)} 전 다시 눕지 않기, 창가·야외 빛 10분`;
 }
 function alarmGuide(alarmStyle){
   if(alarmStyle==='onTime')return '알람을 잘 듣는 편이라 실제 기상 알람과 예비 알람만으로도 충분합니다.';
@@ -115,7 +115,7 @@ function render(plan){
   resultContent.innerHTML=`
     <div class="status-box ${plan.status.cls}"><h3>${plan.status.title}</h3><p>${personaName(plan.persona)} · ${document.getElementById('schedule').selectedOptions[0].textContent} 기준으로 계산했습니다.</p></div>
     <div class="score-row">
-      <div class="score-card"><span>생체 리듬 밀림</span><strong>${plan.rhythmDrift}</strong><details><summary>밀림/당겨짐 설명</summary><div class="details-body"><p>뒤로 밀림은 목표보다 늦게 자고 늦게 일어나는 쪽에 몸이 익숙해졌다는 뜻입니다. 이때는 오늘 취침만 억지로 앞당기기보다, 내일 기상시간을 고정하거나 단계적으로 당기는 쪽이 안정적입니다.</p><p>앞당겨짐은 목표보다 이른 시간대에 몸이 맞춰진 상태입니다. 이 경우에는 목표 기상을 유지하면서 너무 이른 졸림이나 낮잠으로 리듬이 다시 흔들리지 않게 보는 편이 좋습니다.</p></div></details></div>
+      <div class="score-card"><span>리듬 척도</span><strong>${plan.rhythmDrift}</strong><details><summary>척도 설명</summary><div class="details-body"><p>목표 기상시간과 오늘 기상시간의 차이를 기준으로, 현재 생활 리듬이 목표보다 늦은 쪽인지 빠른 쪽인지 보여줍니다.</p><p>뒤로 밀림이 크면 취침만 억지로 당기기보다 기상시간을 먼저 고정하는 쪽이 안정적입니다. 앞당겨짐은 목표보다 이른 시간대에 몸이 맞춰진 상태이므로, 너무 이른 낮잠이나 저녁 졸림으로 다시 흔들리지 않게 봅니다.</p></div></details></div>
       <div class="score-card"><span>리듬 안정 점수</span><strong>${plan.score}점</strong><div class="meter"><i style="width:${plan.score}%"></i></div><details><summary>점수 기준</summary><div class="details-body"><p>리듬 안정 점수는 목표 기상시간과 오늘 기상시간 차이, 확보 수면, 낮잠, 술, 늦은 카페인, 알람 습관을 합쳐 본 생활 리듬 점수입니다.</p><p>80점 이상: 안정권 / 60~79점: 조정 필요 / 40~59점: 리듬 흔들림 큼 / 39점 이하: 무리한 기상 또는 복구 우선 상태입니다.</p></div></details></div>
     </div>
     <div class="result-list">
@@ -125,8 +125,7 @@ function render(plan){
       <div class="result-item"><span>확보 수면</span><strong>${plan.sleepText}</strong></div>
       <div class="result-item"><span>알람 후보</span><strong>${plan.alarms}</strong></div>
       <div class="result-item"><span>최후 기상선</span><strong>${plan.finalLine}</strong></div>
-      <div class="result-item"><span>내일 아침 기준</span><strong>${plan.personaLine}</strong></div>
-      <div class="result-item"><span>아침 빛</span><strong>${plan.lightGuide}</strong></div>
+      <div class="result-item"><span>내일 아침 루틴</span><strong>${plan.personaLine}</strong></div>
     </div>
     <div class="guide"><h4>조정 방향</h4><p><b>${plan.decision.title}</b></p><p>${plan.decision.body}</p></div>
     <div class="guide"><h4>오늘 밤·내일 아침 실행 기준</h4><ul>${plan.actions.concat(plan.recovery).map(p=>`<li>${p}</li>`).join('')}</ul></div>
@@ -187,7 +186,7 @@ function buildAiPrompt(){
 
 [계산 결과]
 - 현재 상태: ${plan.status.title}
-- 생체 리듬 밀림: ${plan.rhythmDrift}
+- 리듬 척도: ${plan.rhythmDrift}
 - 리듬 안정 점수: ${plan.score}점
 - 오늘 잘 시간 추천: ${plan.bedText}
 - 내일 일어날 시간 추천: ${plan.wakeText}
@@ -195,65 +194,65 @@ function buildAiPrompt(){
 - 알람 후보: ${plan.alarms}
 - 최후 기상선: ${plan.finalLine}
 - 조정 방향: ${plan.decision.title} / ${plan.decision.body}
-- 내일 아침 기준: ${plan.personaLine}
+- 내일 아침 루틴: ${plan.personaLine}
 
 [답변 형식]
-반드시 아래 번호 체계를 지켜주세요. 큰 제목은 1, 2, 3처럼 쓰고, 세부 항목은 1-1, 1-2처럼 써주세요.
+가독성이 중요합니다. 큰 제목은 반드시 1. 3줄 요약처럼 번호를 붙이고, 세부 항목은 - 판단:, - 행동: 같은 짧은 불릿으로 써주세요. 1-1, 2-3 같은 세부 번호 형식은 쓰지 마세요. 문단 사이에는 빈 줄을 넣어주세요.
 
 1. 3줄 요약
-1-1. 지금 가장 중요한 판단 1줄
-1-2. 오늘 밤 핵심 행동 1줄
-1-3. 내일 아침 실패 방지 기준 1줄
+- 판단: 지금 가장 중요한 판단 1줄
+- 오늘 밤: 오늘 밤 핵심 행동 1줄
+- 내일 아침: 실패 방지 기준 1줄
 
 2. 오늘 밤 실행 순서
-2-1. 지금부터 취침 준비 전까지 해야 할 행동
-2-2. 씻는 시간과 방식
-2-3. 불 끄기 전 마지막 세팅
-2-4. 실제로 눕는 기준
+- 준비: 지금부터 취침 준비 전까지 해야 할 행동
+- 씻기: 씻는 시간과 방식
+- 세팅: 불 끄기 전 마지막 세팅
+- 눕는 기준: 실제로 눕는 기준
 
 3. 씻기 기준
-3-1. 찬물/미지근한 물/따뜻한 물 중 무엇이 나은지
-3-2. 샤워 길이와 머리 말리는 기준
-3-3. 몸이 더워지거나 각성될 때 조정법
+- 물 온도: 찬물/미지근한 물/따뜻한 물 중 무엇이 나은지
+- 시간: 샤워 길이와 머리 말리는 기준
+- 조정: 몸이 더워지거나 각성될 때 조정법
 
 4. 쉬는 방식
-4-1. 침대에서 쉴지, 의자나 바닥 쿠션에서 쉴지
-4-2. 조명 밝기 기준
-4-3. 생각이 많을 때 처리 방식
+- 위치: 침대에서 쉴지, 의자나 바닥 쿠션에서 쉴지
+- 조명: 조명 밝기 기준
+- 생각 정리: 생각이 많을 때 처리 방식
 
 5. 취침 전 세팅
-5-1. 알람 위치
-5-2. 충전 위치
-5-3. 물, 조명, 방 온도 느낌
-5-4. 알람을 끄고 다시 눕지 않게 하는 장치
+- 알람 위치
+- 충전 위치
+- 물, 조명, 방 온도 느낌
+- 알람을 끄고 다시 눕지 않게 하는 장치
 
-6. 알람 3개의 역할
-6-1. 첫 알람의 역할
-6-2. 실제 기상 알람의 역할
-6-3. 최후 기상선 알람의 역할
+6. 알람 역할 분리
+- 첫 알람: 몸을 깨우는 역할인지, 생략해도 되는지
+- 실제 기상 알람: 반드시 일어나는 기준
+- 최후 기상선: 이 시간을 넘기면 안 되는 이유
 단, 알람을 많이 맞추라는 식으로 말하지 마세요. 각 알람의 목적을 분리하세요.
 
 7. 잠이 안 올 때 플랜 B
-7-1. 몇 분까지 누워볼지
-7-2. 그 시간이 지나면 무엇을 할지
-7-3. 다시 눕는 기준
-7-4. 그래도 못 잤을 때 내일 낮잠과 카페인 기준
+- 제한 시간: 몇 분까지 누워볼지
+- 행동: 그 시간이 지나면 무엇을 할지
+- 복귀 기준: 다시 눕는 기준
+- 다음날 기준: 그래도 못 잤을 때 낮잠과 카페인 기준
 
 8. 실제 기상 실패 시 플랜 B
-8-1. 목표 기상에 못 일어났을 때 바로 해야 할 것
-8-2. 지각/일정 실패를 줄이는 최소 행동
-8-3. 낮잠 가능 여부와 제한 시간
-8-4. 오늘 밤 취침을 더 당길지, 같은 시간으로 고정할지
+- 즉시 행동: 목표 기상에 못 일어났을 때 바로 해야 할 것
+- 최소 손실: 지각/일정 실패를 줄이는 최소 행동
+- 낮잠 기준: 가능 여부와 제한 시간
+- 밤 복구: 오늘 밤 취침을 더 당길지, 같은 시간으로 고정할지
 
 9. 기상 후 체크할 것
-9-1. 실제 기상시간
-9-2. 알람 미룬 횟수
-9-3. 기상 후 10분 멍함 점수
-9-4. 체크 결과에 따라 다음날 취침·기상을 어떻게 조정할지
+- 실제 기상시간
+- 알람 미룬 횟수
+- 기상 후 10분 멍함 점수
+- 다음 조정: 체크 결과에 따라 다음날 취침·기상을 어떻게 조정할지
 
 10. ${personaName(plan.persona)} 기준 추가 행동
-10-1. 생활 유형에 맞는 오전 첫 행동
-10-2. 생활 유형에 맞는 카페인/운동/이동 기준
+- 오전 첫 행동
+- 카페인/운동/이동 기준
 
 금지 표현: 핸드폰 하지 마세요, 일찍 주무세요, 알람 많이 맞추세요 같은 뻔한 말.
 말투는 간결하고 현실적으로 해주세요.`
