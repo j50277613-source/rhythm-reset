@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>리듬리셋 | 수면 리듬 계산기</title>
+  <meta name="description" content="늦잠, 야근, 게임, 술자리로 밀린 수면 리듬을 목표 기상시간에 맞춰 계산해주는 무료 수면 리듬 계산기입니다." />
+  <style>
+    :root {
+      --bg: #f7f7f4;
+      --card: #ffffff;
+      --text: #171717;
+      --muted: #666666;
+      --line: #e7e4dc;
+      --main: #222222;
+      --soft: #f0eee7;
+      --warning: #fff2cf;
+      --success: #e8f5e9;
+      --danger: #fff0f0;
+      --shadow: 0 12px 35px rgba(0,0,0,0.08);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+      background: linear-gradient(180deg, #fbfaf6 0%, var(--bg) 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    header {
+      padding: 34px 20px 14px;
+      text-align: center;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.75);
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    h1 {
+      margin: 20px auto 10px;
+      max-width: 740px;
+      font-size: clamp(32px, 7vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -1.7px;
+    }
+
+    .lead {
+      margin: 0 auto;
+      max-width: 680px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 28px auto 70px;
+      display: grid;
+      grid-template-columns: 1fr 0.9fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 22px;
+      letter-spacing: -0.5px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 7px;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 46px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid #222222;
+      outline-offset: 1px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    .small-text {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 18px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: var(--main);
+      color: #fff;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .secondary {
+      background: var(--soft);
+      color: var(--text);
+    }
+
+    .result {
+      min-height: 430px;
+    }
+
+    .placeholder {
+      height: 100%;
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+      background: #faf9f5;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .status-box {
+      padding: 16px;
+      border-radius: 17px;
+      background: var(--soft);
+      margin-bottom: 14px;
+    }
+
+    .status-box.good { background: var(--success); }
+    .status-box.warn { background: var(--warning); }
+    .status-box.danger { background: var(--danger); }
+
+    .status-box h3 {
+      margin: 0 0 5px;
+      font-size: 20px;
+    }
+
+    .status-box p { margin: 0; color: #333; }
+
+    .result-list {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+    }
+
+    .result-item span:first-child {
+      color: var(--muted);
+    }
+
+    .result-item strong {
+      text-align: right;
+    }
+
+    .guide {
+      padding: 16px;
+      border-radius: 16px;
+      background: #faf9f5;
+      border: 1px solid var(--line);
+      margin-top: 12px;
+    }
+
+    .guide h4 { margin: 0 0 8px; }
+    .guide ul { margin: 0; padding-left: 18px; }
+    .guide li { margin: 5px 0; }
+
+    .premium, .adbox, .notice {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto 18px;
+    }
+
+    .premium-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .price-card {
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .price-card h3 { margin: 0 0 8px; }
+    .price { font-size: 28px; font-weight: 900; margin: 0; }
+    .price small { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+    .ad-placeholder {
+      height: 90px;
+      border: 1px dashed #c7c0b4;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      background: #fff;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .notice .card {
+      box-shadow: none;
+      background: #fffef9;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 20px 16px 36px;
+    }
+
+    .copy-ok {
+      font-size: 13px;
+      color: var(--muted);
+      align-self: center;
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      .wrap { grid-template-columns: 1fr; }
+      .premium-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      .result { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🌙 리듬리셋 MVP</div>
+    <h1>무너진 수면 리듬을 목표 기상시간에 맞춰보세요</h1>
+    <p class="lead">늦잠, 야근, 공부, 게임, 술자리로 밀린 리듬을 입력하면 오늘의 취침·기상·카페인·햇빛 루틴을 자동으로 계산합니다.</p>
+  </header>
+
+  <main>
+    <section class="wrap">
+      <div class="card">
+        <h2 class="section-title">무료 수면 리듬 계산기</h2>
+        <form id="rhythmForm">
+          <div class="form-grid">
+            <div>
+              <label for="sleepTime">어제 실제 잠든 시간</label>
+              <input id="sleepTime" type="time" value="02:30" required />
+            </div>
+            <div>
+              <label for="wakeTime">오늘 일어난 시간</label>
+              <input id="wakeTime" type="time" value="10:40" required />
+            </div>
+            <div>
+              <label for="usualSleep">평소 잠드는 시간</label>
+              <input id="usualSleep" type="time" value="01:00" required />
+            </div>
+            <div>
+              <label for="usualWake">평소 일어나는 시간</label>
+              <input id="usualWake" type="time" value="09:00" required />
+            </div>
+            <div>
+              <label for="targetWake">목표 기상 시간</label>
+              <input id="targetWake" type="time" value="08:00" required />
+            </div>
+            <div>
+              <label for="caffeineTime">마지막 카페인 시간</label>
+              <input id="caffeineTime" type="time" value="16:00" />
+            </div>
+            <div>
+              <label for="nap">낮잠</label>
+              <select id="nap">
+                <option value="none">안 잤음</option>
+                <option value="short">20분 이내</option>
+                <option value="long">1시간 이상</option>
+                <option value="late">오후 늦게 잠</option>
+              </select>
+            </div>
+            <div>
+              <label for="alcohol">술</label>
+              <select id="alcohol">
+                <option value="no">안 마심</option>
+                <option value="yes">마심</option>
+              </select>
+            </div>
+            <div class="full">
+              <label for="important">내일 중요한 일정</label>
+              <select id="important">
+                <option value="no">없음</option>
+                <option value="yes">있음. 무조건 목표 시간에 일어나야 함</option>
+              </select>
+              <p class="small-text">의학적 진단이 아니라 생활 리듬 관리용 계산기입니다.</p>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="submit">내 리듬 계산하기</button>
+            <button class="secondary" type="button" id="resetBtn">초기화</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card result" id="resultCard">
+        <h2 class="section-title">오늘의 결과</h2>
+        <div class="placeholder" id="placeholder">
+          왼쪽에 시간을 입력하고<br />“내 리듬 계산하기”를 누르세요.
+        </div>
+        <div id="resultContent" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section class="adbox">
+      <div class="ad-placeholder">
+        광고 영역 자리입니다. 나중에 Google AdSense 승인 후 광고 코드를 넣는 위치입니다.
+      </div>
+    </section>
+
+    <section class="premium">
+      <div class="card">
+        <h2 class="section-title">프리미엄 예정</h2>
+        <p class="small-text">무료는 오늘 계산만 제공합니다. 프리미엄은 기록 저장, 7일 복구 플랜, 광고 제거를 제공합니다.</p>
+        <div class="premium-grid">
+          <div class="price-card">
+            <h3>1회 상세 플랜</h3>
+            <p class="price">900원</p>
+            <p class="small-text">오늘 상태를 더 자세히 분석</p>
+          </div>
+          <div class="price-card">
+            <h3>7일 복구 플랜</h3>
+            <p class="price">2,900원</p>
+            <p class="small-text">7일간 단계별 기상 루틴</p>
+          </div>
+          <div class="price-card">
+            <h3>월정액</h3>
+            <p class="price">4,900원 <small>/월</small></p>
+            <p class="small-text">기록 저장, 광고 제거, AI 코멘트</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="notice">
+      <div class="card">
+        이 서비스는 수면장애, 불면증, 수면무호흡 등 질환을 진단하거나 치료하지 않습니다. 심한 불면, 과도한 주간 졸림, 코골이·호흡 멈춤, 우울감 등이 지속되면 의료기관 상담이 필요합니다.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> 리듬리셋. 무료 수면 리듬 계산기 MVP.
+  </footer>
+
+  <script>
+    const form = document.getElementById('rhythmForm');
+    const resultContent = document.getElementById('resultContent');
+    const placeholder = document.getElementById('placeholder');
+    const resetBtn = document.getElementById('resetBtn');
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function toMin(time) {
+      const [h, m] = time.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    function fmt(min) {
+      min = ((Math.round(min) % 1440) + 1440) % 1440;
+      const h = Math.floor(min / 60).toString().padStart(2, '0');
+      const m = (min % 60).toString().padStart(2, '0');
+      return `${h}:${m}`;
+    }
+
+    function diffWake(wake, target) {
+      // 오늘 기상 시간이 목표보다 얼마나 늦거나 빠른지 계산합니다.
+      let d = wake - target;
+      if (d > 720) d -= 1440;
+      if (d < -720) d += 1440;
+      return d;
+    }
+
+    function minutesText(min) {
+      const abs = Math.abs(min);
+      const h = Math.floor(abs / 60);
+      const m = abs % 60;
+      if (h === 0) return `${m}분`;
+      if (m === 0) return `${h}시간`;
+      return `${h}시간 ${m}분`;
+    }
+
+    function classify(delay) {
+      if (delay <= 30 && delay >= -30) return { title: '목표 시간에 가까운 상태', cls: 'good' };
+      if (delay > 30 && delay <= 120) return { title: '리듬이 조금 늦어진 상태', cls: 'warn' };
+      if (delay > 120) return { title: '리듬이 많이 늦어진 상태', cls: 'danger' };
+      return { title: '목표보다 일찍 깬 상태', cls: 'good' };
+    }
+
+    function buildPlan(data) {
+      const sleep = toMin(data.sleepTime);
+      const wake = toMin(data.wakeTime);
+      const usualSleep = toMin(data.usualSleep);
+      const targetWake = toMin(data.targetWake);
+      const caffeine = data.caffeineTime ? toMin(data.caffeineTime) : null;
+
+      const delay = diffWake(wake, targetWake);
+      const important = data.important === 'yes';
+      const alcohol = data.alcohol === 'yes';
+      const nap = data.nap;
+
+      let recommendedWake;
+      if (important) {
+        recommendedWake = targetWake;
+      } else if (delay > 180) {
+        recommendedWake = targetWake + 120;
+      } else if (delay > 120) {
+        recommendedWake = targetWake + 90;
+      } else if (delay > 60) {
+        recommendedWake = targetWake + 45;
+      } else {
+        recommendedWake = targetWake;
+      }
+
+      let targetSleepDuration = 450; // 7시간 30분
+      if (alcohol) targetSleepDuration = 480;
+      if (important && delay > 120) targetSleepDuration = 420;
+
+      let recommendedBed = recommendedWake - targetSleepDuration;
+
+      // 평소 취침보다 너무 이른 취침을 강요하지 않도록 보정
+      const usualGap = recommendedBed - usualSleep;
+      if (!important && usualGap < -120) {
+        recommendedBed = usualSleep - 60;
+      }
+
+      if (nap === 'long') recommendedBed += 30;
+      if (nap === 'late') recommendedBed += 60;
+      if (alcohol) recommendedBed += 30;
+
+      const alarm1 = recommendedWake - 10;
+      const alarm2 = recommendedWake;
+      const alarm3 = recommendedWake + 10;
+      const caffeineCut = Math.min(recommendedBed - 480, 17 * 60);
+      const lightStart = recommendedWake;
+      const lightEnd = recommendedWake + 30;
+
+      let napGuide = '가능하면 피하기';
+      if (delay <= 30 && nap === 'none') napGuide = '너무 졸릴 때만 15시 전 20분';
+      if (important) napGuide = '15시 전 15~20분만 허용';
+
+      let caffeineGuide = `${fmt(caffeineCut)} 이후 피하기`;
+      let caffeineWarning = '';
+      if (caffeine !== null) {
+        const lateCaffeine = diffWake(caffeine, caffeineCut) > 0;
+        if (lateCaffeine) caffeineWarning = '마지막 카페인 시간이 늦은 편이라 오늘 밤 잠드는 시간이 밀릴 수 있습니다.';
+      }
+
+      const status = classify(delay);
+
+      let stateText;
+      if (delay > 0) stateText = `오늘 기상 시간이 목표보다 약 ${minutesText(delay)} 늦습니다.`;
+      else if (delay < 0) stateText = `오늘 기상 시간이 목표보다 약 ${minutesText(delay)} 빠릅니다.`;
+      else stateText = '오늘 기상 시간이 목표와 같습니다.';
+
+      let mainAdvice = '오늘은 기상 시간을 기준으로 리듬을 맞추는 것이 우선입니다.';
+      if (delay > 120 && !important) mainAdvice = '오늘은 한 번에 당기기보다 1~2시간만 먼저 당기는 방식이 현실적입니다.';
+      if (important) mainAdvice = '내일 중요한 일정이 있으므로 목표 기상 성공을 최우선으로 잡습니다.';
+      if (alcohol) mainAdvice += ' 술을 마신 날은 수면 질이 떨어질 수 있어 무리한 회복보다 안전한 기상이 중요합니다.';
+
+      return {
+        delay,
+        status,
+        stateText,
+        mainAdvice,
+        recommendedBed: fmt(recommendedBed),
+        recommendedWake: fmt(recommendedWake),
+        alarms: `${fmt(alarm1)} / ${fmt(alarm2)} / ${fmt(alarm3)}`,
+        caffeineGuide,
+        caffeineWarning,
+        napGuide,
+        lightGuide: `${fmt(lightStart)}~${fmt(lightEnd)} 사이 햇빛 10~20분`,
+        avoid: alcohol ? '야식, 추가 음주, 침대에서 영상 보기' : '침대에서 유튜브·릴스·게임 보기',
+        tomorrow: delay > 60 ? '내일 성공하면 다음날 기상 시간을 30~45분 더 당기기' : '같은 시간에 2~3일 반복해서 리듬 고정하기'
+      };
+    }
+
+    function render(plan) {
+      placeholder.style.display = 'none';
+      resultContent.style.display = 'block';
+      resultContent.innerHTML = `
+        <div class="status-box ${plan.status.cls}">
+          <h3>${plan.status.title}</h3>
+          <p>${plan.stateText}<br>${plan.mainAdvice}</p>
+        </div>
+
+        <div class="result-list">
+          <div class="result-item"><span>추천 취침</span><strong>${plan.recommendedBed}</strong></div>
+          <div class="result-item"><span>추천 기상</span><strong>${plan.recommendedWake}</strong></div>
+          <div class="result-item"><span>알람 후보</span><strong>${plan.alarms}</strong></div>
+          <div class="result-item"><span>카페인</span><strong>${plan.caffeineGuide}</strong></div>
+          <div class="result-item"><span>낮잠</span><strong>${plan.napGuide}</strong></div>
+          <div class="result-item"><span>아침 빛</span><strong>${plan.lightGuide}</strong></div>
+        </div>
+
+        <div class="guide">
+          <h4>오늘 행동 가이드</h4>
+          <ul>
+            <li>오늘 피할 것: ${plan.avoid}</li>
+            <li>내일 목표: ${plan.tomorrow}</li>
+            ${plan.caffeineWarning ? `<li>${plan.caffeineWarning}</li>` : ''}
+          </ul>
+        </div>
+
+        <div class="actions">
+          <button class="secondary" type="button" id="copyBtn">결과 복사</button>
+          <span class="copy-ok" id="copyOk">복사 완료</span>
+        </div>
+      `;
+
+      document.getElementById('copyBtn').addEventListener('click', () => {
+        const text = `리듬리셋 결과\n\n${plan.status.title}\n${plan.stateText}\n\n추천 취침: ${plan.recommendedBed}\n추천 기상: ${plan.recommendedWake}\n알람 후보: ${plan.alarms}\n카페인: ${plan.caffeineGuide}\n낮잠: ${plan.napGuide}\n아침 빛: ${plan.lightGuide}\n오늘 피할 것: ${plan.avoid}\n내일 목표: ${plan.tomorrow}`;
+        navigator.clipboard.writeText(text).then(() => {
+          const ok = document.getElementById('copyOk');
+          ok.style.display = 'inline';
+          setTimeout(() => ok.style.display = 'none', 1700);
+        });
+      });
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      // FormData가 id 대신 name만 읽으므로 직접 수집합니다.
+      const manualData = {
+        sleepTime: document.getElementById('sleepTime').value,
+        wakeTime: document.getElementById('wakeTime').value,
+        usualSleep: document.getElementById('usualSleep').value,
+        usualWake: document.getElementById('usualWake').value,
+        targetWake: document.getElementById('targetWake').value,
+        caffeineTime: document.getElementById('caffeineTime').value,
+        nap: document.getElementById('nap').value,
+        alcohol: document.getElementById('alcohol').value,
+        important: document.getElementById('important').value,
+      };
+      render(buildPlan(manualData));
+    });
+
+    resetBtn.addEventListener('click', () => {
+      form.reset();
+      document.getElementById('sleepTime').value = '02:30';
+      document.getElementById('wakeTime').value = '10:40';
+      document.getElementById('usualSleep').value = '01:00';
+      document.getElementById('usualWake').value = '09:00';
+      document.getElementById('targetWake').value = '08:00';
+      document.getElementById('caffeineTime').value = '16:00';
+      resultContent.style.display = 'none';
+      placeholder.style.display = 'flex';
+    });
+  </script>
+</body>
+</html>
