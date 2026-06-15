@@ -73,18 +73,31 @@
     .check-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
     .record-list{display:grid;gap:8px;margin-top:12px}.record{border:1px solid var(--line);border-radius:14px;background:#fff;padding:11px 12px;font-size:13px;color:#333}
     .ai-box{display:none;margin-top:12px}.error-text{display:none;margin-top:8px;color:#b42318;font-size:13px;font-weight:700}
+    .use-cases{width:min(1080px,calc(100% - 30px));margin:10px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .case-pill{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 13px;font-size:13px;color:#333;box-shadow:0 8px 22px rgba(0,0,0,.04)}
+    .case-pill b{display:block;font-size:14px;color:#171717;margin-bottom:3px}
+    .upgrade-card{border:1px solid var(--line);border-radius:17px;background:#fffef9;padding:14px;margin-top:12px}
+    .upgrade-card h4{margin:0 0 7px;font-size:16px}.upgrade-card p{margin:6px 0;color:#333}.upgrade-card ul{margin:8px 0 0;padding-left:18px}.upgrade-card li{margin:5px 0}
+    .ai-diff{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .ai-diff .mini{background:#fff}
     .example{border:1px solid var(--line);border-radius:16px;background:#fff;padding:13px;margin-top:10px;font-size:13.5px}
     .example h4{margin:0 0 8px}.example ol{margin:8px 0 0;padding-left:20px}.example li{margin:5px 0}
     footer{text-align:center;color:var(--muted);font-size:13px;padding:18px 16px 34px}
-    @media(max-width:860px){.wrap,.two-grid,.form-grid,.check-grid,.score-row,.mini-grid,.feature-grid{grid-template-columns:1fr}.full{grid-column:auto}.result{min-height:auto}.card{padding:18px}header{padding-top:25px}.result-item{display:block}.result-item strong{display:block;text-align:left;max-width:100%;margin-top:3px}}
+    @media(max-width:860px){.wrap,.two-grid,.form-grid,.check-grid,.score-row,.mini-grid,.feature-grid,.use-cases,.ai-diff{grid-template-columns:1fr}.full{grid-column:auto}.result{min-height:auto}.card{padding:18px}header{padding-top:25px}.result-item{display:block}.result-item strong{display:block;text-align:left;max-width:100%;margin-top:3px}}
   </style>
 </head>
 <body>
 <header>
 <div class="logo">🌙 리듬리셋</div>
 <h1>오늘 몇 시에 자야 할까?</h1>
-<p class="lead">목표 기상시간에 맞춰 오늘 잘 시간, 내일 일어날 시간, 알람, 다음날 리듬 복구 기준을 계산합니다.</p>
+<p class="lead">늦잠, 밤샘, 술자리, 마감근무, 시험 전날처럼 리듬이 흔들린 날에 오늘 잘 시간과 내일 기상 기준을 잡아줍니다.</p>
 </header>
+<section class="use-cases">
+  <div class="case-pill"><b>늦잠 잔 날</b>오늘 밤 취침과 내일 기상 기준 재계산</div>
+  <div class="case-pill"><b>밤샘·게임 후</b>무리한 조기 기상 대신 손실 줄이는 기준</div>
+  <div class="case-pill"><b>술자리·마감근무</b>수면 질 흔들린 다음날 복구 기준</div>
+  <div class="case-pill"><b>시험·오픈 전날</b>최후 기상선과 알람 역할 분리</div>
+</section>
 <main>
 <section class="wrap">
 <div class="card">
@@ -219,17 +232,21 @@
 </section>
 <section class="below">
 <div class="card">
-<h2 class="section-title">AI 상세 플랜</h2>
-<p class="small-text">기본 계산값을 바탕으로 오늘 밤 행동 순서, 씻기·휴식 기준, 알람 운용, 실패했을 때 복구 기준까지 정리합니다.</p>
+<h2 class="section-title">AI 상세 실행 플랜</h2>
+<p class="small-text">기본 계산은 시간을 알려주고, AI 플랜은 오늘 밤 실제 행동 순서와 실패했을 때 대체 기준까지 정리합니다.</p>
+<div class="ai-diff">
+  <div class="mini"><b>기본 계산</b>오늘 잘 시간, 내일 기상, 알람 후보, 리듬 위치를 빠르게 확인합니다.</div>
+  <div class="mini"><b>AI 상세 플랜</b>씻기·휴식·방 세팅·알람 위치·잠 안 올 때·못 일어났을 때까지 실행 기준을 줍니다.</div>
+</div>
 <details>
 <summary>AI 플랜 예시 보기</summary>
 <div class="details-body">
 <div class="example">
 <h4>AI 상세 플랜 예시</h4>
 <ol>
-<li><b>1. 오늘 밤 실행 순서</b><br/>- 준비: 22:10부터 조명을 낮추고, 내일 챙길 물건을 먼저 한곳에 둡니다.<br/>- 씻기: 22:25에 미지근한 물로 짧게 씻고, 머리는 완전히 말립니다.<br/>- 취침 시도: 23:00에 눕되, 20분 이상 잠이 안 오면 침대 밖에서 10분 쉬고 다시 눕습니다.</li>
-<li><b>2. 아침 기상 세팅</b><br/>- 실제 기상 알람은 침대 밖에 둡니다.<br/>- 최후 기상선 알람은 방을 나가야 끌 수 있는 위치가 좋습니다.<br/>- 알람을 끄고 다시 눕는 편이면 충전기를 침대 옆에 두지 않습니다.</li>
-<li><b>3. 실패했을 때 복구 기준</b><br/>- 목표 기상에 실패하면 낮잠은 15:00 전 20분 이내로 제한합니다.<br/>- 그날 밤은 취침을 더 무리하게 당기지 말고, 같은 기상시간을 한 번 더 고정합니다.</li>
+<li><b>1. 오늘 밤 실행 순서</b><br/>- 준비: 22:10까지 내일 입을 옷과 가방을 문 앞에 둡니다.<br/>- 씻기: 22:20에 미지근한 물로 짧게 씻고, 몸이 더워지면 5분 식힌 뒤 눕습니다.<br/>- 눕는 기준: 23:00에 눕고, 20분 넘게 못 자면 침대 밖에서 조도 낮게 10분 쉬었다가 돌아옵니다.</li>
+<li><b>2. 알람 운용</b><br/>- 실제 기상 알람: 침대에서 팔이 닿지 않는 곳에 둡니다.<br/>- 최후 기상선: 이 알람은 끄는 즉시 화장실로 가는 기준입니다.<br/>- 다시 눕는 편이면 충전기는 침대 옆에 두지 않습니다.</li>
+<li><b>3. 실패했을 때 플랜 B</b><br/>- 목표 기상에 실패하면 낮잠은 15:00 전 20분 이내로 제한합니다.<br/>- 내일 밤은 취침을 무리하게 앞당기지 말고, 같은 기상시간을 한 번 더 고정합니다.</li>
 </ol>
 </div>
 </div>
@@ -240,8 +257,8 @@
 </section>
 <section class="below">
 <div class="card">
-<h2 class="section-title">리듬리셋 플러스 준비 기능</h2>
-<p class="small-text">광고 없이 기록을 쌓고, 최근 패턴을 반영한 AI 플랜을 받는 구조로 준비 중입니다.</p>
+<h2 class="section-title">기록 기반 플러스 기능</h2>
+<p class="small-text">한 번 계산하고 끝내는 구조가 아니라, 실제 수면·기상 기록이 쌓일수록 다음 플랜을 더 개인화하는 방향입니다.</p>
 <div class="feature-grid">
 <div class="feature"><b>광고 제거</b>계산과 AI 플랜 사이에 광고 없이 바로 확인</div>
 <div class="feature"><b>AI 하루 3회</b>취침 전, 기상 후, 실패 시 재계산</div>

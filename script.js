@@ -47,8 +47,8 @@ document.getElementById('persona').addEventListener('change',updatePersonaHint);
 function rhythmDriftText(min){const abs=Math.abs(Math.round(min));if(abs<30)return '목표와 거의 맞음';return `약 ${minutesText(abs)} ${min>0?'뒤로 밀림':'앞당겨짐'}`}
 function rhythmScore(drift,sleep,nap,alcohol,caffeineLate,schedule,alarmStyle){let score=100;score-=Math.min(45,Math.abs(drift)/10);if(sleep<360)score-=18;if(sleep<300)score-=12;if(nap==='long'||nap==='late')score-=10;if(alcohol==='yes')score-=8;if(caffeineLate)score-=8;if(schedule==='must'&&sleep<360)score-=8;if(alarmStyle==='miss')score-=10;if(alarmStyle==='bedphone'||alarmStyle==='snooze')score-=6;return Math.max(0,Math.min(100,Math.round(score)))}
 function personaMorningLine(persona,recommendedWake){
-  if(persona==='worker')return `직장인: ${fmt(recommendedWake+10)} 준비 시작, 출근길·창가에서 빛 10분, 첫 카페인은 ${fmt(recommendedWake+60)} 이후`;
-  if(persona==='student')return `학생: ${fmt(recommendedWake+15)} 등교 준비, 이동 중 빛 10분, 첫 집중은 ${fmt(recommendedWake+60)} 이후`; 
+  if(persona==='worker')return `직장인: ${fmt(recommendedWake+10)} 씻기·출근 준비 시작, 출근길 또는 창가 앞에서 빛 10분, 첫 카페인은 ${fmt(recommendedWake+60)} 이후`;
+  if(persona==='student')return `학생: ${fmt(recommendedWake+15)} 씻기·등교 준비, 이동 중 빛 10분, 첫 집중은 ${fmt(recommendedWake+60)} 이후`; 
   return `자율 생활형: ${fmt(recommendedWake+15)}까지 세면·물 마시기, ${fmt(recommendedWake+30)} 전 다시 눕지 않기, 창가·야외 빛 10분`;
 }
 function alarmGuide(alarmStyle){
@@ -115,20 +115,18 @@ function render(plan){
   resultContent.innerHTML=`
     <div class="status-box ${plan.status.cls}"><h3>${plan.status.title}</h3><p>${personaName(plan.persona)} · ${document.getElementById('schedule').selectedOptions[0].textContent} 기준으로 계산했습니다.</p></div>
     <div class="score-row">
-      <div class="score-card"><span>리듬 척도</span><strong>${plan.rhythmDrift}</strong><details><summary>척도 설명</summary><div class="details-body"><p>목표 기상시간과 오늘 기상시간의 차이를 기준으로, 현재 생활 리듬이 목표보다 늦은 쪽인지 빠른 쪽인지 보여줍니다.</p><p>뒤로 밀림이 크면 취침만 억지로 당기기보다 기상시간을 먼저 고정하는 쪽이 안정적입니다. 앞당겨짐은 목표보다 이른 시간대에 몸이 맞춰진 상태이므로, 너무 이른 낮잠이나 저녁 졸림으로 다시 흔들리지 않게 봅니다.</p></div></details></div>
+      <div class="score-card"><span>내 리듬 위치</span><strong>${plan.rhythmDrift}</strong><details><summary>위치 설명</summary><div class="details-body"><p>목표 기상시간과 오늘 기상시간을 비교해, 지금 생활 리듬이 목표보다 늦은 쪽인지 빠른 쪽인지 보여줍니다.</p><p><b>뒤로 밀림</b>이 크면 오늘 억지로 일찍 눕는 것보다 내일 기상시간을 먼저 고정하는 편이 안정적입니다.</p><p><b>앞당겨짐</b>이면 이미 몸이 이른 시간대에 맞춰져 있는 상태라, 밤에 너무 일찍 졸려 리듬이 다시 흔들리지 않게 유지 기준을 봅니다.</p></div></details></div>
       <div class="score-card"><span>리듬 안정 점수</span><strong>${plan.score}점</strong><div class="meter"><i style="width:${plan.score}%"></i></div><details><summary>점수 기준</summary><div class="details-body"><p>리듬 안정 점수는 목표 기상시간과 오늘 기상시간 차이, 확보 수면, 낮잠, 술, 늦은 카페인, 알람 습관을 합쳐 본 생활 리듬 점수입니다.</p><p>80점 이상: 안정권 / 60~79점: 조정 필요 / 40~59점: 리듬 흔들림 큼 / 39점 이하: 무리한 기상 또는 복구 우선 상태입니다.</p></div></details></div>
     </div>
     <div class="result-list">
       <div class="result-item"><span>${bedLabel}</span><strong>${plan.bedText}</strong></div>
       <div class="result-item"><span>내일 일어날 시간 추천</span><strong>${plan.wakeText}</strong></div>
-      <div class="result-item"><span>내일 목표 기상시간</span><strong>${plan.targetText}</strong></div>
       <div class="result-item"><span>확보 수면</span><strong>${plan.sleepText}</strong></div>
       <div class="result-item"><span>알람 후보</span><strong>${plan.alarms}</strong></div>
-      <div class="result-item"><span>최후 기상선</span><strong>${plan.finalLine}</strong></div>
-      <div class="result-item"><span>내일 아침 루틴</span><strong>${plan.personaLine}</strong></div>
+      <div class="result-item"><span>내일 아침 기준</span><strong>${plan.personaLine}</strong></div>
     </div>
     <div class="guide"><h4>조정 방향</h4><p><b>${plan.decision.title}</b></p><p>${plan.decision.body}</p></div>
-    <div class="guide"><h4>오늘 밤·내일 아침 실행 기준</h4><ul>${plan.actions.concat(plan.recovery).map(p=>`<li>${p}</li>`).join('')}</ul></div>
+    <div class="upgrade-card"><h4>상세 플랜에서 더 필요한 것</h4><p>기본 계산은 시간을 빠르게 잡는 용도입니다. 실제로 실패를 줄이려면 아래 기준이 더 필요합니다.</p><ul><li>잠이 안 올 때 몇 분 뒤 침대 밖으로 나올지</li><li>알람을 어디에 두고 어떤 역할로 나눌지</li><li>목표 기상에 실패했을 때 낮잠·카페인·오늘 밤 취침을 어떻게 조정할지</li></ul></div>
   `;
   saveTempPlan(plan);renderRecords();
 }
@@ -169,7 +167,8 @@ document.getElementById('savePlanBtn').addEventListener('click',()=>{if(!lastPla
 document.getElementById('clearRecordsBtn').addEventListener('click',()=>{localStorage.removeItem('rhythmRecords');renderRecords()});
 function buildAiPrompt(){
   const plan=lastPlan||makePlan();if(!plan)return'';
-  return `너는 수면 리듬 관리 코치입니다. 의학적 진단처럼 말하지 말고 생활 리듬 조정 관점으로만 답해주세요.
+  const records=getRecords().slice(0,5).map((r,i)=>`${i+1}. ${r.date} - ${r.text}`).join('\n') || '아직 저장된 기록 없음';
+  return `너는 수면 리듬 관리 코치입니다. 의학적 진단처럼 말하지 말고 생활 리듬 조정 관점으로만 답해주세요. 기본 계산값을 반복하지 말고, 사용자가 실제로 실행할 행동 기준을 우선으로 답해주세요.
 
 [사용자 상황]
 - 사용 상황: ${plan.mode==='soon'?'곧 잘 예정':'미리 계획 중'}
@@ -184,6 +183,9 @@ function buildAiPrompt(){
 - 기상 반응: ${document.getElementById('alarmStyle').selectedOptions[0].textContent}
 - 오늘 마지막 카페인: ${plan.caffeine!==null?fmt(plan.caffeine):'모름'}
 
+[최근 기록]
+${records}
+
 [계산 결과]
 - 현재 상태: ${plan.status.title}
 - 리듬 척도: ${plan.rhythmDrift}
@@ -194,10 +196,15 @@ function buildAiPrompt(){
 - 알람 후보: ${plan.alarms}
 - 최후 기상선: ${plan.finalLine}
 - 조정 방향: ${plan.decision.title} / ${plan.decision.body}
-- 내일 아침 루틴: ${plan.personaLine}
+- 내일 아침 기준: ${plan.personaLine}
+
+[답변 원칙]
+- 기본 계산 결과에 이미 나온 시간표만 반복하지 마세요.
+- 사용자가 실제로 실패하는 지점, 즉 잠이 안 옴·알람 끄고 다시 눕기·기상 실패·낮잠 과다를 막는 기준을 구체적으로 주세요.
+- 최근 기록이 있으면 기록을 반영해서 조정하세요. 기록이 없으면 첫 사용 기준이라고 말하세요.
 
 [답변 형식]
-가독성이 중요합니다. 큰 제목은 반드시 1. 3줄 요약처럼 번호를 붙이고, 세부 항목은 - 판단:, - 행동: 같은 짧은 불릿으로 써주세요. 1-1, 2-3 같은 세부 번호 형식은 쓰지 마세요. 문단 사이에는 빈 줄을 넣어주세요.
+가독성이 중요합니다. 큰 제목은 반드시 1. 3줄 요약처럼 번호를 붙이세요. 세부 항목은 1-1, 2-3 같은 번호를 쓰지 말고, - 판단:, - 행동:, - 기준: 같은 짧은 불릿으로 써주세요. 각 큰 제목 사이에는 빈 줄을 넣고, 한 문단은 2~3줄을 넘기지 마세요.
 
 1. 3줄 요약
 - 판단: 지금 가장 중요한 판단 1줄
