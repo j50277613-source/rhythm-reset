@@ -4,105 +4,350 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>리듬리셋 | 수면 리듬 계산기</title>
-  <meta name="description" content="내일 꼭 일어나야 하는 시간이 있을 때 오늘 몇 시에 자고 어떻게 알람을 잡을지 계산해주는 수면 리듬 관리 도구입니다." />
+  <meta name="description" content="늦잠, 야근, 게임, 술자리로 밀린 수면 리듬을 목표 기상시간에 맞춰 계산해주는 무료 수면 리듬 계산기입니다." />
   <style>
     :root {
-      --bg:#f6f5f1;
-      --card:#ffffff;
-      --text:#171717;
-      --muted:#686868;
-      --line:#e6e1d8;
-      --main:#202020;
-      --soft:#f1eee7;
-      --soft2:#faf9f5;
-      --warning:#fff3d1;
-      --success:#e8f5e9;
-      --danger:#fff0f0;
-      --shadow:0 14px 34px rgba(0,0,0,.07);
-      --radius:22px;
+      --bg: #f7f7f4;
+      --card: #ffffff;
+      --text: #171717;
+      --muted: #666666;
+      --line: #e7e4dc;
+      --main: #222222;
+      --soft: #f0eee7;
+      --warning: #fff2cf;
+      --success: #e8f5e9;
+      --danger: #fff0f0;
+      --shadow: 0 12px 35px rgba(0,0,0,0.08);
+      --radius: 20px;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Segoe UI",Roboto,"Noto Sans KR",Arial,sans-serif;
-      background:linear-gradient(180deg,#fbfaf7 0%,var(--bg) 100%);
-      color:var(--text);
-      line-height:1.55;
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+      background: linear-gradient(180deg, #fbfaf6 0%, var(--bg) 100%);
+      color: var(--text);
+      line-height: 1.55;
     }
-    header{padding:30px 18px 12px;text-align:center}
-    .logo{display:inline-flex;gap:7px;align-items:center;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.8);font-size:13px;color:var(--muted)}
-    h1{margin:17px auto 8px;max-width:560px;font-size:clamp(30px,7vw,44px);line-height:1.12;letter-spacing:-1.2px;font-weight:760}
-    .lead{margin:0 auto;max-width:620px;color:var(--muted);font-size:16px}
-    .wrap{width:min(1080px,calc(100% - 30px));margin:24px auto 28px;display:grid;grid-template-columns:1fr .95fr;gap:16px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
-    .section-title{margin:0 0 14px;font-size:21px;letter-spacing:-.6px}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
-    label{display:block;font-weight:780;font-size:14px;margin-bottom:7px}
-    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:15px;background:#fff;color:var(--text);font-family:inherit;font-size:16px}
-    input,select{min-height:50px;padding:12px 13px}
-    textarea{min-height:210px;padding:14px;resize:vertical;line-height:1.55}
-    input.time-input{font-size:17px;font-weight:560;font-variant-numeric:tabular-nums;letter-spacing:.1px}
-    input::placeholder{color:#b7b7b7;font-weight:450}
-    select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#777 50%),linear-gradient(135deg,#777 50%,transparent 50%);background-position:calc(100% - 18px) 21px,calc(100% - 12px) 21px;background-size:6px 6px,6px 6px;background-repeat:no-repeat;padding-right:34px}
-    input:focus,select:focus,textarea:focus{outline:2px solid #202020;outline-offset:1px}
-    .full{grid-column:1/-1}
-    .small-text{margin:7px 0 0;color:var(--muted);font-size:13px}
-    .hint{background:var(--soft2);border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin:13px 0 0;color:#333;font-size:13px}
-    details{margin-top:15px;border:1px solid var(--line);border-radius:17px;background:var(--soft2);overflow:hidden}
-    summary{cursor:pointer;padding:14px 15px;font-weight:820;list-style:none}
-    summary::-webkit-details-marker{display:none}
-    summary::after{content:"+";float:right;color:var(--muted)}
-    details[open] summary::after{content:"-"}
-    .details-body{padding:0 15px 15px}
-    .actions{display:flex;gap:9px;margin-top:17px;flex-wrap:wrap}
-    button{border:0;border-radius:15px;padding:13px 17px;font-size:15.5px;font-weight:820;cursor:pointer;font-family:inherit}
-    .primary{background:var(--main);color:#fff;flex:1;min-width:180px}
-    .secondary{background:var(--soft);color:var(--text)}
-    .ghost{background:#fff;border:1px solid var(--line);color:var(--text)}
-    .result{min-height:430px}
-    .placeholder{height:100%;min-height:360px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);background:var(--soft2);border:1px dashed var(--line);border-radius:18px;padding:24px}
-    .status-box{padding:16px;border-radius:18px;background:var(--soft);margin-bottom:13px}
-    .status-box.good{background:var(--success)}
-    .status-box.warn{background:var(--warning)}
-    .status-box.danger{background:var(--danger)}
-    .status-box h3{margin:0 0 5px;font-size:20px;letter-spacing:-.4px}
-    .status-box p{margin:0;color:#333}
-    .result-list{display:grid;gap:9px;margin:13px 0}
-    .result-item{display:flex;justify-content:space-between;gap:14px;padding:12px 13px;border:1px solid var(--line);border-radius:15px;background:#fff}
-    .result-item span:first-child{color:var(--muted)}
-    .result-item strong{text-align:right;font-variant-numeric:tabular-nums}
-    .guide{padding:15px;border-radius:17px;background:var(--soft2);border:1px solid var(--line);margin-top:12px}
-    .guide h4{margin:0 0 8px;font-size:16px}
-    .guide ul{margin:0;padding-left:18px}
-    .guide li{margin:6px 0}
-    .subtle{color:var(--muted);font-size:13px}
-    .below{width:min(1080px,calc(100% - 30px));margin:0 auto 16px}
-    .two-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .check-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
-    .record-list{display:grid;gap:8px;margin-top:12px}
-    .record{border:1px solid var(--line);border-radius:14px;background:#fff;padding:11px 12px;font-size:13px;color:#333}
-    .ai-box{display:none;margin-top:12px}
-    .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-    .price-card{border:1px solid var(--line);border-radius:17px;background:#fff;padding:15px}
-    .price-card h3{margin:0 0 7px;font-size:17px}
-    .price{font-size:24px;font-weight:880;margin:0}
-    .error-text{display:none;margin-top:8px;color:#b42318;font-size:13px;font-weight:700}
-    footer{text-align:center;color:var(--muted);font-size:13px;padding:18px 16px 34px}
-    @media(max-width:860px){
-      .wrap,.two-grid{grid-template-columns:1fr}
-      .form-grid,.check-grid,.price-grid{grid-template-columns:1fr}
-      .full{grid-column:auto}
-      .result{min-height:auto}
-      .card{padding:18px}
-      header{padding-top:25px}
+
+    header {
+      padding: 34px 20px 14px;
+      text-align: center;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.75);
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    h1 {
+      margin: 20px auto 10px;
+      max-width: 740px;
+      font-size: clamp(32px, 7vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -1.7px;
+    }
+
+    .lead {
+      margin: 0 auto;
+      max-width: 680px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 28px auto 70px;
+      display: grid;
+      grid-template-columns: 1fr 0.9fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 22px;
+      letter-spacing: -0.5px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 7px;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 50px;
+      padding: 12px 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--text);
+      appearance: none;
+    }
+
+    input.time-input {
+      font-size: 19px;
+      font-weight: 850;
+      letter-spacing: 0.2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input::placeholder { color: #b2b2b2; font-weight: 500; }
+
+    select {
+      background-image: linear-gradient(45deg, transparent 50%, #777 50%), linear-gradient(135deg, #777 50%, transparent 50%);
+      background-position: calc(100% - 18px) 21px, calc(100% - 12px) 21px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 34px;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid #222222;
+      outline-offset: 1px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    .small-text {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    details {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #faf9f5;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 14px 15px;
+      font-weight: 850;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; float: right; color: var(--muted); }
+    details[open] summary::after { content: "-"; }
+
+    .details-body {
+      padding: 0 15px 15px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 18px;
+      font-size: 16px;
+      font-weight: 850;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .primary {
+      background: var(--main);
+      color: #fff;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .secondary {
+      background: var(--soft);
+      color: var(--text);
+    }
+
+    .result {
+      min-height: 430px;
+    }
+
+    .placeholder {
+      height: 100%;
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+      background: #faf9f5;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .status-box {
+      padding: 16px;
+      border-radius: 17px;
+      background: var(--soft);
+      margin-bottom: 14px;
+    }
+
+    .status-box.good { background: var(--success); }
+    .status-box.warn { background: var(--warning); }
+    .status-box.danger { background: var(--danger); }
+
+    .status-box h3 {
+      margin: 0 0 5px;
+      font-size: 20px;
+    }
+
+    .status-box p { margin: 0; color: #333; }
+
+    .result-list {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+    }
+
+    .result-item span:first-child {
+      color: var(--muted);
+    }
+
+    .result-item strong {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .guide {
+      padding: 16px;
+      border-radius: 16px;
+      background: #faf9f5;
+      border: 1px solid var(--line);
+      margin-top: 12px;
+    }
+
+    .guide h4 { margin: 0 0 8px; }
+    .guide ul { margin: 0; padding-left: 18px; }
+    .guide li { margin: 6px 0; }
+
+    .premium, .adbox, .notice {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto 18px;
+    }
+
+    .premium-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .price-card {
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .price-card h3 { margin: 0 0 8px; }
+    .price { font-size: 28px; font-weight: 900; margin: 0; }
+    .price small { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+    .ad-placeholder {
+      height: 90px;
+      border: 1px dashed #c7c0b4;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      background: #fff;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .notice .card {
+      box-shadow: none;
+      background: #fffef9;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 20px 16px 36px;
+    }
+
+    .copy-ok {
+      font-size: 13px;
+      color: var(--muted);
+      align-self: center;
+      display: none;
+    }
+
+    .error-text {
+      display: none;
+      margin-top: 8px;
+      color: #b42318;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 860px) {
+      .wrap { grid-template-columns: 1fr; }
+      .premium-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      .result { min-height: auto; }
+      header { padding-top: 26px; }
+      .card { padding: 18px; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">🌙 리듬리셋</div>
-    <h1>오늘 몇 시에 자야 할까?</h1>
-    <p class="lead">내일 꼭 일어나야 하는 시간이 있을 때, 오늘 잘 시간·알람·기상 후 기준을 바로 계산합니다.</p>
+    <h1>무너진 수면 리듬을 목표 기상시간에 맞춰보세요</h1>
+    <p class="lead">늦잠, 야근, 공부, 게임, 술자리로 밀린 리듬을 입력하면 오늘의 취침·기상·알람 루틴을 자동으로 계산합니다.</p>
   </header>
 
   <main>
@@ -111,46 +356,44 @@
         <h2 class="section-title">무료 수면 리듬 계산기</h2>
         <form id="rhythmForm">
           <div class="form-grid">
-            <div class="full">
-              <label for="mode">지금 상황</label>
-              <select id="mode">
-                <option value="plan">미리 계획 중입니다</option>
-                <option value="soon">곧 잘 예정입니다</option>
-              </select>
-            </div>
             <div>
-              <label for="bedTime">오늘 잘 예정 시간</label>
-              <input id="bedTime" class="time-input" type="text" inputmode="text" value="00:00" placeholder="예: 23, 2330, 밤11시" required />
+              <label for="sleepTime">어제 실제 잠든 시간</label>
+              <input id="sleepTime" class="time-input" type="text" inputmode="numeric" value="02:30" placeholder="예: 02:30" required />
             </div>
             <div>
               <label for="wakeTime">오늘 일어난 시간</label>
-              <input id="wakeTime" class="time-input" type="text" inputmode="text" value="10:40" placeholder="예: 1040, 오전8시" required />
+              <input id="wakeTime" class="time-input" type="text" inputmode="numeric" value="10:40" placeholder="예: 10:40" required />
             </div>
             <div>
-              <label for="targetWake">내일 꼭 일어날 시간</label>
-              <input id="targetWake" class="time-input" type="text" inputmode="text" value="05:00" placeholder="예: 5, 0500" required />
+              <label for="targetWake">목표 기상 시간</label>
+              <input id="targetWake" class="time-input" type="text" inputmode="numeric" value="08:00" placeholder="예: 08:00" required />
             </div>
             <div>
-              <label for="importance">기상 중요도</label>
-              <select id="importance">
-                <option value="normal">보통</option>
-                <option value="important">중요함</option>
-                <option value="critical">무조건 일어나야 함</option>
+              <label for="important">내일 중요한 일정</label>
+              <select id="important">
+                <option value="no">없음</option>
+                <option value="yes">있음. 목표 시간 고정</option>
               </select>
             </div>
           </div>
-
-          <div class="hint">
-            시간은 편하게 입력하세요. 목표 기상에 <b>5</b>를 쓰면 <b>05:00</b>, 잘 예정 시간에 <b>17</b>이나 <b>1700</b>을 쓰면 <b>17:00</b>처럼 정리됩니다. 오후 시간은 <b>오후5시</b>, <b>17시</b>처럼 쓰면 가장 정확합니다.
-          </div>
-          <p class="error-text" id="errorText">시간 입력을 확인해주세요. 예: 05:00, 0500, 오후5시</p>
+          <p class="small-text">시간은 02:30, 230, 2:30처럼 입력할 수 있습니다.</p>
+          <p class="error-text" id="errorText">시간 입력을 확인해주세요. 예: 02:30</p>
 
           <details>
             <summary>선택 입력 열기</summary>
             <div class="details-body">
               <div class="form-grid">
                 <div>
-                  <label for="nap">오늘 낮잠</label>
+                  <label for="usualSleep">평소 잠드는 시간</label>
+                  <input id="usualSleep" class="time-input" type="text" inputmode="numeric" value="01:00" placeholder="예: 01:00" />
+                </div>
+                <div>
+                  <label for="caffeineTime">마지막 카페인 시간</label>
+                  <input id="caffeineTime" class="time-input" type="text" inputmode="numeric" value="" placeholder="모르면 비워두기" />
+                  <p class="small-text">커피, 에너지드링크, 진한 차를 마신 시간을 뜻합니다.</p>
+                </div>
+                <div>
+                  <label for="nap">낮잠</label>
                   <select id="nap">
                     <option value="none">안 잤음</option>
                     <option value="short">20분 이내</option>
@@ -165,19 +408,12 @@
                     <option value="yes">마심</option>
                   </select>
                 </div>
-                <div class="full">
-                  <label for="sleepDebt">최근 3일 수면부족</label>
-                  <select id="sleepDebt">
-                    <option value="normal">보통</option>
-                    <option value="low">거의 없음</option>
-                    <option value="high">많음</option>
-                  </select>
-                </div>
               </div>
             </div>
           </details>
 
-          <p class="small-text">의학적 진단이 아니라 생활 리듬 조정용 계산기입니다.</p>
+          <p class="small-text">의학적 진단이 아니라 생활 리듬 관리용 계산기입니다.</p>
+
           <div class="actions">
             <button class="primary" type="submit">내 리듬 계산하기</button>
             <button class="secondary" type="button" id="resetBtn">초기화</button>
@@ -187,92 +423,53 @@
 
       <div class="card result" id="resultCard">
         <h2 class="section-title">오늘의 결과</h2>
-        <div class="placeholder" id="placeholder">시간을 입력하고<br />“내 리듬 계산하기”를 누르세요.</div>
+        <div class="placeholder" id="placeholder">
+          왼쪽에 시간을 입력하고<br />“내 리듬 계산하기”를 누르세요.
+        </div>
         <div id="resultContent" style="display:none;"></div>
       </div>
     </section>
 
-    <section class="below two-grid">
-      <div class="card">
-        <h2 class="section-title">기상 체크</h2>
-        <p class="small-text">내일 아침에 실제 결과를 넣으면, 오늘 플랜이 맞았는지 바로 확인합니다.</p>
-        <div class="check-grid">
-          <div>
-            <label for="actualWake">실제 기상시간</label>
-            <input id="actualWake" class="time-input" type="text" inputmode="text" placeholder="예: 05:10" />
-          </div>
-          <div>
-            <label for="snooze">알람 미룬 횟수</label>
-            <select id="snooze">
-              <option value="0">0번</option>
-              <option value="1">1번</option>
-              <option value="2">2번</option>
-              <option value="3">3번 이상</option>
-            </select>
-          </div>
-          <div>
-            <label for="fog">10분 멍함</label>
-            <select id="fog">
-              <option value="1">1 낮음</option>
-              <option value="2">2</option>
-              <option value="3">3 보통</option>
-              <option value="4">4</option>
-              <option value="5">5 심함</option>
-            </select>
-          </div>
-        </div>
-        <div class="actions">
-          <button class="primary" id="checkWakeBtn" type="button">기상 결과 확인</button>
-          <button class="ghost" id="savePlanBtn" type="button">오늘 기록 저장</button>
-        </div>
-        <div id="wakeCheckResult" class="guide" style="display:none;"></div>
+    <section class="adbox">
+      <div class="ad-placeholder">
+        광고 영역 자리입니다. 나중에 Google AdSense 승인 후 광고 코드를 넣는 위치입니다.
       </div>
+    </section>
 
+    <section class="premium">
       <div class="card">
-        <h2 class="section-title">최근 기록</h2>
-        <p class="small-text">현재는 로그인 없이 이 기기에만 저장됩니다. 나중에 유료 기능은 계정 저장·누적 분석으로 확장합니다.</p>
-        <div id="records" class="record-list"></div>
-        <div class="actions">
-          <button class="ghost" id="clearRecordsBtn" type="button">기록 비우기</button>
+        <h2 class="section-title">프리미엄 예정</h2>
+        <p class="small-text">무료는 오늘 계산만 제공합니다. 프리미엄은 기록 저장, 7일 복구 플랜, 광고 제거를 제공합니다.</p>
+        <div class="premium-grid">
+          <div class="price-card">
+            <h3>1회 상세 플랜</h3>
+            <p class="price">900원</p>
+            <p class="small-text">오늘 상태를 더 자세히 분석</p>
+          </div>
+          <div class="price-card">
+            <h3>7일 복구 플랜</h3>
+            <p class="price">2,900원</p>
+            <p class="small-text">7일간 단계별 기상 루틴</p>
+          </div>
+          <div class="price-card">
+            <h3>월정액</h3>
+            <p class="price">4,900원 <small>/월</small></p>
+            <p class="small-text">기록 저장, 광고 제거, AI 코멘트</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="below">
+    <section class="notice">
       <div class="card">
-        <h2 class="section-title">AI 상세 플랜 테스트</h2>
-        <p class="small-text">결제 전 검증 단계입니다. 지금은 자동 결제 없이 프롬프트를 만들어 ChatGPT에 붙여넣는 방식으로 테스트합니다.</p>
-        <div class="price-grid">
-          <div class="price-card">
-            <h3>현재 방향</h3>
-            <p class="price">베타 무료</p>
-            <p class="small-text">사람들이 돈 낼 수준인지 먼저 검증</p>
-          </div>
-          <div class="price-card">
-            <h3>후보 가격</h3>
-            <p class="price">광고 or 500원</p>
-            <p class="small-text">API 자동화 이후 A/B 테스트</p>
-          </div>
-        </div>
-        <div class="actions">
-          <button class="secondary" id="makeAiPromptBtn" type="button">AI 상세 프롬프트 만들기</button>
-          <button class="ghost" id="copyAiPromptBtn" type="button">복사</button>
-        </div>
-        <div class="ai-box" id="aiBox">
-          <textarea id="aiPrompt" readonly></textarea>
-          <p class="small-text" id="copyState"></p>
-        </div>
-      </div>
-    </section>
-
-    <section class="below">
-      <div class="card" style="box-shadow:none;background:#fffef9;font-size:14px;color:var(--muted)">
-        이 서비스는 수면장애, 불면증, 수면무호흡 등 질환을 진단하거나 치료하지 않습니다. 심한 불면, 과도한 주간 졸림, 코골이·호흡 멈춤 등이 지속되면 의료기관 상담이 필요합니다.
+        이 서비스는 수면장애, 불면증, 수면무호흡 등 질환을 진단하거나 치료하지 않습니다. 심한 불면, 과도한 주간 졸림, 코골이·호흡 멈춤, 우울감 등이 지속되면 의료기관 상담이 필요합니다.
       </div>
     </section>
   </main>
 
-  <footer>© <span id="year"></span> 리듬리셋. 무료 수면 리듬 계산기.</footer>
+  <footer>
+    © <span id="year"></span> 리듬리셋. 무료 수면 리듬 계산기.
+  </footer>
 
   <script>
     const form = document.getElementById('rhythmForm');
@@ -280,259 +477,241 @@
     const placeholder = document.getElementById('placeholder');
     const resetBtn = document.getElementById('resetBtn');
     const errorText = document.getElementById('errorText');
-    const aiBox = document.getElementById('aiBox');
-    const aiPrompt = document.getElementById('aiPrompt');
-    const copyState = document.getElementById('copyState');
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    let lastPlan = null;
+    function parseTime(value) {
+      if (!value) return null;
+      let v = String(value).trim().replace(/\s/g, '');
+      v = v.replace('시', ':').replace('분', '');
+      if (/^\d{1,2}:\d{1,2}$/.test(v)) {
+        const [h, m] = v.split(':').map(Number);
+        if (h >= 0 && h <= 23 && m >= 0 && m <= 59) return h * 60 + m;
+        return null;
+      }
+      if (/^\d{3,4}$/.test(v)) {
+        const padded = v.padStart(4, '0');
+        const h = Number(padded.slice(0, 2));
+        const m = Number(padded.slice(2));
+        if (h >= 0 && h <= 23 && m >= 0 && m <= 59) return h * 60 + m;
+        return null;
+      }
+      if (/^\d{1,2}$/.test(v)) {
+        const h = Number(v);
+        if (h >= 0 && h <= 23) return h * 60;
+      }
+      return null;
+    }
 
-    function pad(n){return String(n).padStart(2,'0')}
-    function fmt(min){
-      min = ((Math.round(min)%1440)+1440)%1440;
-      return `${pad(Math.floor(min/60))}:${pad(min%60)}`;
+    function fmt(min) {
+      min = ((Math.round(min) % 1440) + 1440) % 1440;
+      const h = Math.floor(min / 60).toString().padStart(2, '0');
+      const m = (min % 60).toString().padStart(2, '0');
+      return `${h}:${m}`;
     }
-    function minutesText(min){
-      const abs = Math.abs(Math.round(min));
-      const h = Math.floor(abs/60), m = abs%60;
-      if(h===0) return `${m}분`;
-      if(m===0) return `${h}시간`;
-      return `${h}시간 ${m}분`;
+
+    function normalizeInput(el) {
+      const parsed = parseTime(el.value);
+      if (parsed !== null) el.value = fmt(parsed);
     }
-    function durationText(min){
-      const h = Math.floor(min/60), m = min%60;
-      if(m===0) return `${h}시간`;
-      return `${h}시간 ${m}분`;
-    }
-    function diffClock(a,b){
-      let d = a-b;
-      if(d>720)d-=1440;
-      if(d<-720)d+=1440;
+
+    document.querySelectorAll('.time-input').forEach((el) => {
+      el.addEventListener('blur', () => normalizeInput(el));
+    });
+
+    function diffWake(wake, target) {
+      let d = wake - target;
+      if (d > 720) d -= 1440;
+      if (d < -720) d += 1440;
       return d;
     }
 
-    function parseTime(value, context='general'){
-      if(!value) return null;
-      let raw = String(value).trim().toLowerCase().replace(/\s/g,'');
-      if(!raw) return null;
-      const hasPM = raw.includes('오후') || raw.includes('밤') || raw.includes('저녁');
-      const hasAM = raw.includes('오전') || raw.includes('새벽') || raw.includes('아침');
-      raw = raw.replace(/오전|오후|새벽|밤|저녁|아침/g,'');
-      raw = raw.replace(/시/g,':').replace(/분/g,'');
-      raw = raw.replace(/[^0-9:]/g,'');
+    function minutesText(min) {
+      const abs = Math.abs(Math.round(min));
+      const h = Math.floor(abs / 60);
+      const m = abs % 60;
+      if (h === 0) return `${m}분`;
+      if (m === 0) return `${h}시간`;
+      return `${h}시간 ${m}분`;
+    }
 
-      let h, m;
-      if(/^\d{1,2}:\d{0,2}$/.test(raw)){
-        const parts = raw.split(':');
-        h = Number(parts[0]);
-        m = parts[1] === '' ? 0 : Number(parts[1]);
-      } else if(/^\d{3,4}$/.test(raw)){
-        const p = raw.padStart(4,'0');
-        h = Number(p.slice(0,2));
-        m = Number(p.slice(2));
-      } else if(/^\d{1,2}$/.test(raw)){
-        h = Number(raw);
-        m = 0;
-        if(!hasAM && !hasPM && context === 'bed' && h >= 7 && h <= 11) h += 12;
+    function classify(delay) {
+      if (delay <= 30 && delay >= -30) return { title: '목표 시간에 가까운 상태', cls: 'good' };
+      if (delay > 30 && delay <= 120) return { title: '리듬이 조금 늦어진 상태', cls: 'warn' };
+      if (delay > 120) return { title: '리듬이 많이 늦어진 상태', cls: 'danger' };
+      return { title: '목표보다 일찍 깬 상태', cls: 'good' };
+    }
+
+    function buildPlan(data) {
+      const wake = parseTime(data.wakeTime);
+      const targetWake = parseTime(data.targetWake);
+      const usualSleep = parseTime(data.usualSleep) ?? 60;
+      const caffeine = parseTime(data.caffeineTime);
+
+      const delay = diffWake(wake, targetWake);
+      const important = data.important === 'yes';
+      const alcohol = data.alcohol === 'yes';
+      const nap = data.nap;
+
+      let recommendedWake;
+      if (important) {
+        recommendedWake = targetWake;
+      } else if (delay > 180) {
+        recommendedWake = targetWake + 120;
+      } else if (delay > 120) {
+        recommendedWake = targetWake + 90;
+      } else if (delay > 60) {
+        recommendedWake = targetWake + 45;
       } else {
-        return null;
+        recommendedWake = targetWake;
       }
-      if(Number.isNaN(h)||Number.isNaN(m)||m<0||m>59) return null;
-      if(hasPM && h < 12) h += 12;
-      if(hasAM && h === 12) h = 0;
-      if(h<0 || h>23) return null;
-      return h*60+m;
-    }
 
-    function normalizeInput(el){
-      const context = el.id === 'bedTime' ? 'bed' : 'wake';
-      const parsed = parseTime(el.value, context);
-      if(parsed !== null) el.value = fmt(parsed);
-    }
-    document.querySelectorAll('.time-input').forEach(el=>el.addEventListener('blur',()=>normalizeInput(el)));
+      let targetSleepDuration = 450;
+      if (alcohol) targetSleepDuration = 480;
+      if (important && delay > 120) targetSleepDuration = 420;
 
-    function classify(sleepDuration, wakeDelay, importance, nap, sleepDebt){
-      if(importance === 'critical' && sleepDuration < 360) return {title:'무조건 기상 우선 상태', cls:'danger'};
-      if(sleepDuration < 300) return {title:'수면 시간이 많이 부족한 상태', cls:'danger'};
-      if(wakeDelay > 180) return {title:'리듬이 많이 밀린 상태', cls:'danger'};
-      if(nap === 'long' || nap === 'late') return {title:'낮잠 영향이 남은 상태', cls:'warn'};
-      if(sleepDebt === 'high') return {title:'회복 여유가 부족한 상태', cls:'warn'};
-      if(wakeDelay > 60) return {title:'리듬이 조금 밀린 상태', cls:'warn'};
-      return {title:'목표 기상에 맞출 수 있는 상태', cls:'good'};
-    }
+      let recommendedBed = recommendedWake - targetSleepDuration;
 
-    function makePlan(){
-      const mode = document.getElementById('mode').value;
-      const bed = parseTime(document.getElementById('bedTime').value,'bed');
-      const wake = parseTime(document.getElementById('wakeTime').value,'wake');
-      const target = parseTime(document.getElementById('targetWake').value,'wake');
-      if(bed === null || wake === null || target === null) return null;
+      const usualGap = recommendedBed - usualSleep;
+      if (!important && usualGap < -120) recommendedBed = usualSleep - 60;
+      if (nap === 'long') recommendedBed += 30;
+      if (nap === 'late') recommendedBed += 60;
+      if (alcohol) recommendedBed += 30;
 
-      const importance = document.getElementById('importance').value;
-      const nap = document.getElementById('nap').value;
-      const alcohol = document.getElementById('alcohol').value;
-      const sleepDebt = document.getElementById('sleepDebt').value;
+      const alarm1 = recommendedWake - 10;
+      const alarm2 = recommendedWake;
+      const alarm3 = recommendedWake + 10;
+      const caffeineCut = Math.min(recommendedBed - 480, 17 * 60);
+      const lightStart = recommendedWake;
+      const lightEnd = recommendedWake + 30;
 
-      let targetNext = target;
-      if(targetNext <= bed) targetNext += 1440;
-      const sleepDuration = targetNext - bed;
-      const wakeDelay = diffClock(wake, target);
-      const status = classify(sleepDuration,wakeDelay,importance,nap,sleepDebt);
+      let napGuide = '가능하면 생략';
+      if (delay <= 30 && nap === 'none') napGuide = '졸리면 15시 전 20분까지만';
+      if (important) napGuide = '15시 전 15~20분까지만 허용';
 
-      let alarmA = target - 20, alarmB = target, alarmC = target + 5, finalLine = target;
-      if(importance === 'normal') { alarmA = target - 10; alarmC = target + 15; finalLine = target + 15; }
-      if(importance === 'important') { alarmA = target - 15; alarmC = target + 10; finalLine = target + 10; }
-
-      let caffeineGuide = '기상 후 60~90분 뒤 첫 카페인, 14:00 이후 피하기';
-      if(importance === 'normal' && sleepDuration >= 420) caffeineGuide = '기상 후 60분 뒤, 15:00 이후 피하기';
-      if(sleepDuration < 300 || importance === 'critical') caffeineGuide = '내일 오전 보조용으로만 사용, 13:00 이후 피하기';
-
-      const lead = mode === 'soon'
-        ? '지금은 계획을 더 바꾸기보다, 정한 시간에 눕고 기상 성공률을 올리는 쪽이 우선입니다.'
-        : '아직 시간이 남아 있으므로, 잘 예정 시간까지 리듬을 더 밀지 않는 준비가 우선입니다.';
-
-      const points = [];
-      if(mode === 'plan') {
-        points.push(`${fmt(bed-90)}부터는 일정·게임·작업을 새로 시작하지 않는 기준선으로 잡으세요.`);
-        points.push(`${fmt(bed-30)}에는 알람과 내일 첫 행동을 미리 정하고, ${fmt(bed)} 전후에 눕는 것을 목표로 하세요.`);
-      } else {
-        points.push(`지금부터는 목표를 “빨리 잠들기”가 아니라 ${fmt(target)} 기상 성공으로 잡으세요.`);
-        points.push(`알람은 ${fmt(alarmA)} 확인용, ${fmt(alarmB)} 기상용, ${fmt(alarmC)} 최후 확인용으로 역할을 나누세요.`);
+      let caffeineGuide = '선택 입력 없음';
+      let caffeineWarning = '';
+      if (caffeine !== null) {
+        caffeineGuide = `${fmt(caffeineCut)} 이후 피하기`;
+        const lateCaffeine = diffWake(caffeine, caffeineCut) > 0;
+        if (lateCaffeine) caffeineWarning = '마지막 카페인 시간이 늦은 편이라 추천 취침시간을 너무 이르게 잡지 않았습니다.';
       }
-      if(sleepDuration < 360) points.push(`확보 수면이 ${durationText(sleepDuration)}라 컨디션보다 시간 엄수가 우선입니다. 내일 낮잠은 15시 전 15~20분까지만 허용하세요.`);
-      else if(nap === 'long' || nap === 'late') points.push('오늘 낮잠 영향이 남아 있을 수 있으니, 잠이 늦게 오더라도 기상시간은 고정하는 쪽이 낫습니다.');
-      else points.push(`내일 ${fmt(target)}에 일어나면, 같은 기상 시간을 한 번 더 반복해서 리듬을 고정하세요.`);
-      if(alcohol === 'yes') points.push('술을 마신 날은 잠든 시간보다 기상 안정성이 흔들릴 수 있으니, 기상 직후 물과 밝은 빛을 먼저 확보하세요.');
+
+      const status = classify(delay);
+
+      let stateText;
+      if (delay > 0) stateText = `오늘 기상 시간이 목표보다 약 ${minutesText(delay)} 늦습니다.`;
+      else if (delay < 0) stateText = `오늘 기상 시간이 목표보다 약 ${minutesText(delay)} 빠릅니다.`;
+      else stateText = '오늘 기상 시간이 목표와 같습니다.';
+
+      let mainAdvice = '오늘은 잠드는 시간보다 내일 기상 시간을 먼저 고정하는 편이 낫습니다.';
+      if (delay > 120 && !important) mainAdvice = '오늘 한 번에 원래 리듬으로 돌리기보다, 기상 시간을 1~2시간만 먼저 당기는 편이 현실적입니다.';
+      if (important) mainAdvice = '내일 일정이 있으므로 수면시간을 완벽히 채우는 것보다 목표 기상 성공을 우선합니다.';
+      if (alcohol) mainAdvice += ' 술을 마신 날은 수면 질이 떨어질 수 있어 기상 난도가 올라갈 수 있습니다.';
+
+      let actionPoint = '추천 취침보다 30분 이상 일찍 눕기보다, 정해진 시간에 눕고 알람 시간을 고정하세요.';
+      if (delay > 120 && !important) actionPoint = '오늘은 취침을 무리하게 앞당기지 말고, 내일 기상 시간을 먼저 당기는 방식으로 접근하세요.';
+      if (important) actionPoint = '최후 알람은 목표 기상 10분 뒤까지만 두고, 침대 밖으로 나가는 행동을 먼저 고정하세요.';
+      if (nap === 'late') actionPoint = '오후 늦은 낮잠 때문에 밤잠이 밀릴 수 있으니, 오늘 취침 목표는 보수적으로 잡았습니다.';
+      if (alcohol) actionPoint = '오늘은 추가 음주와 야식을 피하고, 물을 마신 뒤 기상 알람을 3개로 나누는 편이 낫습니다.';
 
       return {
-        mode, bed, wake, target, importance, nap, alcohol, sleepDebt,
-        sleepDuration, wakeDelay, status, lead, points,
-        bedText:fmt(bed), targetText:fmt(target), sleepText:durationText(sleepDuration),
-        alarms:`${fmt(alarmA)} / ${fmt(alarmB)} / ${fmt(alarmC)}`,
-        finalLine:fmt(finalLine), caffeineGuide,
-        lightGuide:`${fmt(target)}~${fmt(target+30)} 사이 창가·야외 빛 10~20분`
+        delay,
+        status,
+        stateText,
+        mainAdvice,
+        recommendedBed: fmt(recommendedBed),
+        recommendedWake: fmt(recommendedWake),
+        alarms: `${fmt(alarm1)} / ${fmt(alarm2)} / ${fmt(alarm3)}`,
+        caffeineGuide,
+        caffeineWarning,
+        napGuide,
+        lightGuide: `${fmt(lightStart)}~${fmt(lightEnd)} 사이 햇빛 10~20분`,
+        actionPoint,
+        tomorrow: delay > 60 ? '내일 성공하면 다음날 기상 시간을 30~45분 더 당기기' : '같은 시간에 2~3일 반복해서 리듬 고정하기'
       };
     }
 
-    function render(plan){
-      lastPlan = plan;
-      placeholder.style.display='none';
-      resultContent.style.display='block';
+    function render(plan) {
+      placeholder.style.display = 'none';
+      resultContent.style.display = 'block';
       resultContent.innerHTML = `
         <div class="status-box ${plan.status.cls}">
           <h3>${plan.status.title}</h3>
-          <p>${plan.lead}</p>
+          <p>${plan.stateText}<br>${plan.mainAdvice}</p>
         </div>
+
         <div class="result-list">
-          <div class="result-item"><span>오늘 잘 예정</span><strong>${plan.bedText}</strong></div>
-          <div class="result-item"><span>확보 수면</span><strong>${plan.sleepText}</strong></div>
-          <div class="result-item"><span>목표 기상</span><strong>${plan.targetText}</strong></div>
+          <div class="result-item"><span>추천 취침</span><strong>${plan.recommendedBed}</strong></div>
+          <div class="result-item"><span>추천 기상</span><strong>${plan.recommendedWake}</strong></div>
           <div class="result-item"><span>알람 후보</span><strong>${plan.alarms}</strong></div>
-          <div class="result-item"><span>최후 기상선</span><strong>${plan.finalLine}</strong></div>
-          <div class="result-item"><span>내일 카페인 기준</span><strong>${plan.caffeineGuide}</strong></div>
+          <div class="result-item"><span>카페인</span><strong>${plan.caffeineGuide}</strong></div>
+          <div class="result-item"><span>낮잠</span><strong>${plan.napGuide}</strong></div>
           <div class="result-item"><span>아침 빛</span><strong>${plan.lightGuide}</strong></div>
         </div>
+
         <div class="guide">
-          <h4>${plan.mode === 'soon' ? '지금 실행 기준' : '오늘 밤 실행 기준'}</h4>
-          <ul>${plan.points.map(p=>`<li>${p}</li>`).join('')}</ul>
+          <h4>오늘 조정 포인트</h4>
+          <ul>
+            <li>${plan.actionPoint}</li>
+            <li>내일 목표: ${plan.tomorrow}</li>
+            ${plan.caffeineWarning ? `<li>${plan.caffeineWarning}</li>` : ''}
+          </ul>
+        </div>
+
+        <div class="actions">
+          <button class="secondary" type="button" id="copyBtn">결과 복사</button>
+          <span class="copy-ok" id="copyOk">복사 완료</span>
         </div>
       `;
-      saveTempPlan(plan);
-      renderRecords();
+
+      document.getElementById('copyBtn').addEventListener('click', () => {
+        const text = `리듬리셋 결과\n\n${plan.status.title}\n${plan.stateText}\n\n추천 취침: ${plan.recommendedBed}\n추천 기상: ${plan.recommendedWake}\n알람 후보: ${plan.alarms}\n카페인: ${plan.caffeineGuide}\n낮잠: ${plan.napGuide}\n아침 빛: ${plan.lightGuide}\n오늘 조정 포인트: ${plan.actionPoint}\n내일 목표: ${plan.tomorrow}`;
+        navigator.clipboard.writeText(text).then(() => {
+          const ok = document.getElementById('copyOk');
+          ok.style.display = 'inline';
+          setTimeout(() => ok.style.display = 'none', 1700);
+        });
+      });
     }
 
-    function saveTempPlan(plan){
-      localStorage.setItem('rhythmLastPlan', JSON.stringify({
-        at:new Date().toISOString(), bed:plan.bedText, target:plan.targetText, sleep:plan.sleepText, status:plan.status.title
-      }));
-    }
-    function getRecords(){
-      try{return JSON.parse(localStorage.getItem('rhythmRecords')||'[]')}catch{return []}
-    }
-    function setRecords(records){localStorage.setItem('rhythmRecords',JSON.stringify(records.slice(0,8)))}
-    function renderRecords(){
-      const box = document.getElementById('records');
-      const records = getRecords();
-      if(records.length === 0){ box.innerHTML = '<div class="record">아직 저장된 기록이 없습니다.</div>'; return; }
-      box.innerHTML = records.map(r=>`<div class="record"><b>${r.date}</b><br>${r.text}</div>`).join('');
-    }
-
-    form.addEventListener('submit',e=>{
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-      errorText.style.display='none';
+      errorText.style.display = 'none';
+      const required = ['sleepTime', 'wakeTime', 'targetWake'];
+      const invalid = required.some((id) => parseTime(document.getElementById(id).value) === null);
+      if (invalid) {
+        errorText.style.display = 'block';
+        return;
+      }
+
+      const manualData = {
+        sleepTime: document.getElementById('sleepTime').value,
+        wakeTime: document.getElementById('wakeTime').value,
+        targetWake: document.getElementById('targetWake').value,
+        important: document.getElementById('important').value,
+        usualSleep: document.getElementById('usualSleep').value,
+        caffeineTime: document.getElementById('caffeineTime').value,
+        nap: document.getElementById('nap').value,
+        alcohol: document.getElementById('alcohol').value,
+      };
       document.querySelectorAll('.time-input').forEach(normalizeInput);
-      const plan = makePlan();
-      if(!plan){errorText.style.display='block';return;}
-      render(plan);
+      render(buildPlan(manualData));
     });
 
-    resetBtn.addEventListener('click',()=>{
+    resetBtn.addEventListener('click', () => {
       form.reset();
-      document.getElementById('mode').value='plan';
-      document.getElementById('bedTime').value='00:00';
-      document.getElementById('wakeTime').value='10:40';
-      document.getElementById('targetWake').value='05:00';
-      document.getElementById('importance').value='normal';
-      document.getElementById('nap').value='none';
-      document.getElementById('alcohol').value='no';
-      document.getElementById('sleepDebt').value='normal';
-      resultContent.style.display='none';
-      placeholder.style.display='flex';
-      errorText.style.display='none';
-      lastPlan=null;
+      document.getElementById('sleepTime').value = '02:30';
+      document.getElementById('wakeTime').value = '10:40';
+      document.getElementById('targetWake').value = '08:00';
+      document.getElementById('important').value = 'no';
+      document.getElementById('usualSleep').value = '01:00';
+      document.getElementById('caffeineTime').value = '';
+      document.getElementById('nap').value = 'none';
+      document.getElementById('alcohol').value = 'no';
+      errorText.style.display = 'none';
+      resultContent.style.display = 'none';
+      placeholder.style.display = 'flex';
     });
-
-    document.getElementById('checkWakeBtn').addEventListener('click',()=>{
-      const target = lastPlan ? lastPlan.target : parseTime(document.getElementById('targetWake').value,'wake');
-      const actual = parseTime(document.getElementById('actualWake').value,'wake');
-      const result = document.getElementById('wakeCheckResult');
-      if(target === null || actual === null){result.style.display='block'; result.innerHTML='<h4>입력 확인</h4><p>실제 기상시간을 먼저 입력해주세요.</p>'; return;}
-      normalizeInput(document.getElementById('actualWake'));
-      const snooze = Number(document.getElementById('snooze').value);
-      const fog = Number(document.getElementById('fog').value);
-      const gap = diffClock(actual,target);
-      let title='계획 성공';
-      let msg=`목표보다 ${minutesText(gap)} ${gap>0?'늦었습니다':'빨랐습니다'}.`;
-      if(Math.abs(gap)<=10) msg='목표 기상시간과 거의 맞았습니다.';
-      if(gap>20 || snooze>=2){title='기상 성공률 보정 필요'; msg += ' 내일은 최후 기상선보다 10분 빠른 알람을 실제 기상 알람으로 잡는 편이 낫습니다.';}
-      if(fog>=4){msg += ' 기상 후 멍함이 큰 편이라 내일 오전 첫 30분은 복잡한 일보다 이동·세면·빛 노출 같은 단순 루틴으로 잡으세요.';}
-      result.style.display='block';
-      result.innerHTML=`<h4>${title}</h4><p>${msg}</p>`;
-      const records = getRecords();
-      records.unshift({date:new Date().toLocaleDateString('ko-KR'), text:`기상 ${fmt(actual)} · 알람 ${snooze}회 · 멍함 ${fog}/5`});
-      setRecords(records);
-      renderRecords();
-    });
-
-    document.getElementById('savePlanBtn').addEventListener('click',()=>{
-      if(!lastPlan){alert('먼저 리듬을 계산해주세요.');return;}
-      const records = getRecords();
-      records.unshift({date:new Date().toLocaleDateString('ko-KR'), text:`취침 ${lastPlan.bedText} · 목표기상 ${lastPlan.targetText} · 수면 ${lastPlan.sleepText}`});
-      setRecords(records);
-      renderRecords();
-    });
-    document.getElementById('clearRecordsBtn').addEventListener('click',()=>{localStorage.removeItem('rhythmRecords');renderRecords();});
-
-    function buildAiPrompt(){
-      const plan = lastPlan || makePlan();
-      if(!plan) return '';
-      return `너는 수면 리듬 관리 코치입니다. 의학적 진단처럼 말하지 말고 생활 리듬 조정 관점으로만 답해주세요.\n\n[사용자 상황]\n- 사용 상황: ${plan.mode === 'soon' ? '곧 잘 예정' : '미리 계획 중'}\n- 오늘 잘 예정 시간: ${plan.bedText}\n- 내일 꼭 일어날 시간: ${plan.targetText}\n- 오늘 일어난 시간: ${fmt(plan.wake)}\n- 내일 기상 중요도: ${plan.importance}\n- 오늘 낮잠: ${plan.nap}\n- 술: ${plan.alcohol}\n- 최근 3일 수면부족: ${plan.sleepDebt}\n\n[계산 결과]\n- 현재 상태: ${plan.status.title}\n- 확보 수면: ${plan.sleepText}\n- 알람 후보: ${plan.alarms}\n- 최후 기상선: ${plan.finalLine}\n- 내일 카페인 기준: ${plan.caffeineGuide}\n\n[답변 요구]\n1. 맨 위에 3줄 요약을 먼저 작성해주세요.\n2. ${plan.mode === 'soon' ? '지금 바로 잘 때 실행 순서' : '오늘 밤 잘 예정 시간까지 실행 순서'}를 시간대별로 정리해주세요.\n3. 알람 실패를 줄이기 위해 알람 3개의 역할을 나눠주세요. 단순히 많이 맞추라는 말은 금지입니다.\n4. 잠이 바로 안 올 때의 대체 기준을 알려주세요. 침대에서 버티라는 식의 일반론은 금지입니다.\n5. 기상 후 체크할 3가지를 알려주세요.\n6. 내일 밤 다시 리듬이 밀리지 않게 할 기준을 알려주세요.\n7. 이 상황에서 돈을 내고 상세 플랜을 볼 가치가 낮다면 솔직히 낮다고 말해주세요.\n\n금지 표현: 유튜브 보지 마세요, 핸드폰 하지 마세요, 일찍 주무세요, 알람 많이 맞추세요 같은 뻔한 말.\n말투는 간결하고 현실적으로 해주세요.`;
-    }
-    document.getElementById('makeAiPromptBtn').addEventListener('click',()=>{
-      document.querySelectorAll('.time-input').forEach(normalizeInput);
-      const text = buildAiPrompt();
-      if(!text){alert('먼저 시간을 입력해주세요.');return;}
-      aiPrompt.value = text;
-      aiBox.style.display='block';
-      copyState.textContent='이 프롬프트를 복사해서 ChatGPT에 붙여넣으면 AI 상세 플랜을 테스트할 수 있습니다.';
-    });
-    document.getElementById('copyAiPromptBtn').addEventListener('click',async()=>{
-      if(!aiPrompt.value){aiPrompt.value=buildAiPrompt(); aiBox.style.display='block';}
-      try{await navigator.clipboard.writeText(aiPrompt.value); copyState.textContent='복사 완료';}
-      catch{copyState.textContent='복사가 안 되면 직접 전체 선택해서 복사해주세요.';}
-    });
-
-    renderRecords();
   </script>
 </body>
 </html>
