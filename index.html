@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>리듬리셋 | 지금 수면 플랜</title>
-  <meta name="description" content="지금 자면 몇 시에 일어나는 게 나은지 계산해주는 수면 직전 플랜 도구입니다." />
+  <title>리듬리셋 | 수면 계획 계산기</title>
+  <meta name="description" content="수면 직전 또는 미리 계획할 때 목표 기상시간에 맞춘 취침·알람 기준을 계산하는 도구입니다." />
   <style>
     :root {
       --bg: #f7f6f1;
@@ -14,18 +14,16 @@
       --line: #e6e1d8;
       --main: #202020;
       --soft: #f0ece3;
-      --accent: #fff3cc;
       --good: #e9f6ea;
       --warn: #fff2cf;
       --bad: #fff0ef;
-      --blue: #eef4ff;
       --shadow: 0 14px 38px rgba(0,0,0,0.07);
       --radius: 20px;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
       background: linear-gradient(180deg, #fbfaf6 0%, var(--bg) 100%);
       color: var(--text);
       line-height: 1.55;
@@ -39,15 +37,15 @@
     h1 {
       margin: 20px auto 10px;
       max-width: 760px;
-      font-size: clamp(32px, 6.4vw, 52px);
+      font-size: clamp(31px, 6.2vw, 50px);
       line-height: 1.12;
       letter-spacing: -1.5px;
-      font-weight: 780;
+      font-weight: 740;
     }
-    .lead { margin: 0 auto; max-width: 680px; color: var(--muted); font-size: 17px; }
+    .lead { margin: 0 auto; max-width: 690px; color: var(--muted); font-size: 16px; }
     .wrap {
       width: min(1120px, calc(100% - 32px));
-      margin: 28px auto 22px;
+      margin: 28px auto 20px;
       display: grid;
       grid-template-columns: .92fr 1.08fr;
       gap: 18px;
@@ -60,29 +58,31 @@
       padding: 22px;
     }
     .section-title { margin: 0 0 14px; font-size: 22px; letter-spacing: -0.5px; }
-    .hint { color: var(--muted); font-size: 13px; margin: 5px 0 0; }
+    .hint { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    label { display: block; font-weight: 720; font-size: 14px; margin-bottom: 7px; }
+    label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 7px; }
+    label small { color: var(--muted); font-weight: 520; }
+    .time-help { margin: 0 0 14px; padding: 12px 13px; border-radius: 14px; background: #fffefb; border: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    .time-help strong { color: var(--text); }
     input, select, textarea {
       width: 100%; min-height: 46px; padding: 11px 12px;
       border: 1px solid var(--line); border-radius: 13px; background: #fff;
       font-size: 16px; color: var(--text); font-family: inherit;
     }
-    input.time-text { font-weight: 620; letter-spacing: .2px; }
+    input.time-text { font-weight: 520; letter-spacing: .1px; font-variant-numeric: tabular-nums; }
     input:focus, select:focus, textarea:focus { outline: 2px solid #242424; outline-offset: 1px; }
     .full { grid-column: 1 / -1; }
     details.optional { margin-top: 14px; border: 1px solid var(--line); border-radius: 16px; padding: 12px; background: #fffefb; }
-    details.optional summary { cursor: pointer; font-weight: 780; }
+    details.optional summary { cursor: pointer; font-weight: 760; }
     details.optional .form-grid { margin-top: 12px; }
     .actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
     button, .button-link {
-      border: 0; border-radius: 14px; padding: 13px 18px; font-size: 16px; font-weight: 820;
+      border: 0; border-radius: 14px; padding: 13px 18px; font-size: 16px; font-weight: 780;
       cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
     }
     .primary { background: var(--main); color: #fff; flex: 1; min-width: 180px; }
     .secondary { background: var(--soft); color: var(--text); }
     .mini-btn { padding: 9px 12px; font-size: 14px; border-radius: 12px; }
-    .result { min-height: 430px; }
     .placeholder {
       min-height: 380px; display: flex; align-items: center; justify-content: center; text-align: center;
       color: var(--muted); background: #faf9f5; border: 1px dashed var(--line); border-radius: 18px; padding: 24px;
@@ -95,17 +95,7 @@
     .result-item span:first-child { color: var(--muted); } .result-item strong { text-align: right; }
     .guide { padding: 16px; border-radius: 16px; background: #faf9f5; border: 1px solid var(--line); margin-top: 12px; }
     .guide h4 { margin: 0 0 8px; } .guide ul { margin: 0; padding-left: 18px; } .guide li { margin: 6px 0; }
-    .compare-grid { display: grid; gap: 10px; }
-    .compare-row { padding: 13px 14px; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
-    .compare-row .top { display:flex; justify-content:space-between; gap:12px; font-weight:800; }
-    .compare-row .desc { margin-top: 4px; color: var(--muted); font-size: 14px; }
-    .tag { display:inline-flex; align-items:center; padding: 3px 8px; border-radius: 999px; font-size: 12px; background: var(--soft); color:#333; }
-    .tag.good { background: var(--good); } .tag.warn { background: var(--warn); } .tag.bad { background: var(--bad); }
     .under-grid { width: min(1120px, calc(100% - 32px)); margin: 0 auto 18px; display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .price-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top:14px; }
-    .price-card { border:1px solid var(--line); border-radius:17px; padding:16px; background:#fff; }
-    .price-card h3 { margin:0 0 7px; } .price { margin:0; font-size:28px; font-weight:900; }
-    .price-card ul { padding-left:18px; margin:10px 0 0; } .price-card li { margin:5px 0; }
     .saved-list { display:grid; gap:8px; margin-top:12px; }
     .saved-item { display:flex; justify-content:space-between; gap:10px; padding:10px 12px; border:1px solid var(--line); border-radius:13px; background:#fff; font-size:14px; }
     .textarea-block { display:none; margin-top:12px; }
@@ -116,39 +106,47 @@
     @media (max-width: 860px) {
       header { padding-top: 28px; }
       .wrap, .under-grid { grid-template-columns: 1fr; width: min(720px, calc(100% - 28px)); }
-      .price-grid, .form-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
       .full { grid-column:auto; }
-      .result { min-height:auto; }
-      .placeholder { min-height: 260px; }
-      .result-item { align-items:flex-start; }
-      h1 { font-size: clamp(31px, 8vw, 44px); }
+      .placeholder { min-height: 240px; }
+      h1 { font-size: clamp(30px, 8vw, 43px); }
+      .card { padding: 18px; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">🌙 리듬리셋</div>
-    <h1>지금 자면, 내일 몇 시에 일어나는 게 나을까?</h1>
-    <p class="lead">수면 직전에 지금 상황을 넣으면 알람 후보, 최후 기상선, 미뤘을 때 손해, 기상 후 체크 기준을 계산합니다.</p>
+    <h1>내일 몇 시에 일어나야 한다면, 오늘 몇 시에 자야 할까?</h1>
+    <p class="lead">수면 직전에도, 저녁에 미리 계획할 때도 사용할 수 있습니다. 목표 기상시간에 맞춰 오늘의 취침 기준과 알람 기준을 정리합니다.</p>
   </header>
 
   <main>
     <section class="wrap">
       <div class="card">
-        <h2 class="section-title">지금 수면 계산기</h2>
+        <h2 class="section-title">수면 계획 계산기</h2>
         <form id="sleepForm">
+          <div class="time-help"><strong>시간은 24시간 기준</strong>입니다. 오후 6시는 <strong>18:00</strong>, 밤 12시는 <strong>00:00</strong>, 새벽 2시 30분은 <strong>02:30</strong>, 밤 11시는 <strong>23:00</strong>으로 입력하세요.</div>
           <div class="form-grid">
-            <div>
-              <label for="bedTime">지금 자려는 시간</label>
-              <input class="time-text" id="bedTime" inputmode="numeric" value="02:30" placeholder="예: 02:30, 230, 2:30" required />
+            <div class="full">
+              <label for="usageMode">지금 상황</label>
+              <select id="usageMode">
+                <option value="planning" selected>미리 계획 중입니다</option>
+                <option value="bedtime">곧 잘 예정입니다</option>
+              </select>
+              <p class="hint">예: 오후 6시에 내일 5시 기상을 준비하면 “미리 계획 중”, 침대에 눕기 직전이면 “곧 잘 예정”을 선택하세요.</p>
             </div>
             <div>
-              <label for="mustWake">내일 꼭 일어날 시간</label>
-              <input class="time-text" id="mustWake" inputmode="numeric" value="08:00" placeholder="예: 08:00, 800" required />
+              <label for="bedTime">오늘 잘 예정 시간 <small>24시간 기준</small></label>
+              <input class="time-text" id="bedTime" inputmode="numeric" value="00:00" placeholder="예: 00:00, 02:30, 23:10" required />
             </div>
             <div>
-              <label for="todayWake">오늘 일어난 시간</label>
-              <input class="time-text" id="todayWake" inputmode="numeric" value="10:30" placeholder="예: 10:30" required />
+              <label for="mustWake">내일 꼭 일어날 시간 <small>24시간 기준</small></label>
+              <input class="time-text" id="mustWake" inputmode="numeric" value="08:00" placeholder="예: 05:00, 08:00" required />
+            </div>
+            <div>
+              <label for="todayWake">오늘 일어난 시간 <small>24시간 기준</small></label>
+              <input class="time-text" id="todayWake" inputmode="numeric" value="10:30" placeholder="예: 10:30, 14:00" required />
             </div>
             <div>
               <label for="importance">내일 기상 중요도</label>
@@ -166,7 +164,6 @@
               <div>
                 <label for="caffeineTime">마지막 카페인 시간</label>
                 <input class="time-text" id="caffeineTime" inputmode="numeric" placeholder="모르면 비워두기" />
-                <p class="hint">커피, 에너지드링크, 진한 차 기준입니다.</p>
               </div>
               <div>
                 <label for="nap">오늘 낮잠</label>
@@ -197,7 +194,7 @@
 
           <p class="hint">의학적 진단이 아니라 생활 리듬 관리용 계산기입니다.</p>
           <div class="actions">
-            <button class="primary" type="submit">지금 수면 플랜 보기</button>
+            <button class="primary" type="submit">수면 플랜 계산하기</button>
             <button class="secondary" type="button" id="resetBtn">초기화</button>
           </div>
         </form>
@@ -205,7 +202,7 @@
 
       <div class="card result" id="resultCard">
         <h2 class="section-title">계산 결과</h2>
-        <div class="placeholder" id="placeholder">왼쪽에 시간을 입력하고<br />“지금 수면 플랜 보기”를 누르세요.</div>
+        <div class="placeholder" id="placeholder">오늘 잘 예정 시간과 목표 기상시간을 입력하고<br />“수면 플랜 계산하기”를 누르세요.</div>
         <div id="resultContent" style="display:none;"></div>
       </div>
     </section>
@@ -213,9 +210,9 @@
     <section class="under-grid">
       <div class="card">
         <h2 class="section-title">기록 저장</h2>
-        <p class="hint">현재 버전은 이 기기에만 저장됩니다. 나중에 로그인 기반 저장을 붙이면 유료 기능으로 바꿀 수 있습니다.</p>
+        <p class="hint">현재 버전은 이 기기에만 저장됩니다. 정식 유료 기능은 로그인 저장과 누적 분석으로 확장할 수 있습니다.</p>
         <div class="actions">
-          <button class="secondary mini-btn" type="button" id="savePlanBtn">최근 결과 저장</button>
+          <button class="secondary mini-btn" type="button" id="savePlanBtn">현재 결과 저장</button>
           <button class="secondary mini-btn" type="button" id="clearSavedBtn">기록 비우기</button>
         </div>
         <div class="saved-list" id="savedList"></div>
@@ -223,7 +220,7 @@
 
       <div class="card">
         <h2 class="section-title">AI 상세 분석</h2>
-        <p class="hint">지금은 ChatGPT에 바로 붙여 넣을 프롬프트를 만들어서 테스트합니다. 자동 AI 답변은 다음 단계에서 서버를 붙여야 합니다.</p>
+        <p class="hint">지금은 ChatGPT에 바로 붙여 넣을 프롬프트를 만들어서 AI 기능을 테스트합니다. 자동 AI 답변은 다음 단계에서 서버를 붙여야 합니다.</p>
         <div class="actions">
           <button class="primary mini-btn" type="button" id="makePromptBtn">AI 분석 프롬프트 만들기</button>
           <a class="button-link secondary mini-btn" href="https://chatgpt.com/" target="_blank" rel="noreferrer">ChatGPT 열기</a>
@@ -237,8 +234,8 @@
 
     <section class="notice">
       <div class="card">
-        <strong>필요할 때만 여는 추가 기능 구조</strong><br />
-        900원: 지금 수면 플랜 자동 AI 분석 · 1,500원: 48시간 복구 플랜. 단, 실제 결제는 아직 연결하지 않았습니다. 먼저 무료 계산 결과와 AI 프롬프트 기능으로 반응을 보는 단계입니다.
+        <strong>추가 기능 후보</strong><br />
+        무료: 기본 수면 계획 · 900원: AI 상세 플랜 · 1,500원: 48시간 복구 플랜. 실제 결제는 아직 연결하지 않았습니다. 먼저 무료 계산과 AI 프롬프트 반응을 보는 단계입니다.
       </div>
     </section>
 
@@ -249,14 +246,13 @@
     </section>
   </main>
 
-  <footer>© <span id="year"></span> 리듬리셋. 지금 수면 플랜 MVP.</footer>
+  <footer>© <span id="year"></span> 리듬리셋. 수면 계획 MVP.</footer>
 
   <script>
     const $ = (id) => document.getElementById(id);
     const form = $('sleepForm');
     const placeholder = $('placeholder');
     const resultContent = $('resultContent');
-    const savedList = $('savedList');
     let latestPlan = null;
 
     $('year').textContent = new Date().getFullYear();
@@ -311,29 +307,8 @@
       return { label, cls, text };
     }
 
-    function addMin(time, plus) { return (time + plus + 1440) % 1440; }
-
-    function makeScenario(label, bed, mustWake, importance, baseSleep) {
-      const sleep = duration(bed, mustWake);
-      const risk = riskBySleep(sleep, importance);
-      const lost = Math.max(0, baseSleep - sleep);
-      let change = '기상시간은 유지하고, 지금 확보 가능한 수면을 그대로 가져갑니다.';
-      if (lost > 0 && lost < 60) change = `${durText(lost)}이 줄어듭니다. 기상 시간은 그대로라 알람 여유가 그만큼 줄어듭니다.`;
-      if (lost >= 60) change = `${durText(lost)}이 줄어듭니다. 목표 기상은 가능해도 오전 컨디션 손해가 커집니다.`;
-      const alarmBuffer = importance === 'critical' ? 20 : importance === 'important' ? 15 : 10;
-      return {
-        label,
-        bed: fmt(bed),
-        sleep,
-        sleepText: durText(sleep),
-        wake: fmt(mustWake),
-        alarms: `${fmt(mustWake - alarmBuffer)} / ${fmt(mustWake)} / ${fmt(mustWake + 10)}`,
-        risk,
-        change
-      };
-    }
-
     function buildPlan() {
+      const mode = $('usageMode').value;
       const bed = parseTime($('bedTime').value);
       const mustWake = parseTime($('mustWake').value);
       const todayWake = parseTime($('todayWake').value);
@@ -343,59 +318,80 @@
       const alcohol = $('alcohol').value;
       const debt = $('recentDebt').value;
       if (bed === null || mustWake === null || todayWake === null) {
-        alert('시간을 02:30 또는 230 형식으로 입력해 주세요.');
+        alert('시간은 24시간 기준으로 02:30 또는 0230 형식으로 입력해 주세요.');
         return null;
       }
 
-      const baseSleep = duration(bed, mustWake);
-      const s0 = makeScenario('지금', bed, mustWake, importance, baseSleep);
-      const s30 = makeScenario('30분 뒤', addMin(bed, 30), mustWake, importance, baseSleep);
-      const s60 = makeScenario('1시간 뒤', addMin(bed, 60), mustWake, importance, baseSleep);
-      const currentRisk = riskBySleep(baseSleep, importance);
-
-      const wakeGapFromMorning = duration(todayWake, bed);
-      let title = '지금 자는 편이 나은 상태';
-      let cls = 'good';
-      let summary = `지금 자면 ${durText(baseSleep)}을 확보할 수 있습니다.`;
-      if (baseSleep < 270) { title = '수면 시간이 많이 부족한 상태'; cls = 'bad'; summary = `지금 자도 ${durText(baseSleep)}이라 내일은 응급 기상 플랜이 필요합니다.`; }
-      else if (baseSleep < 360) { title = '내일 아침 컨디션 주의 상태'; cls = 'warn'; summary = `지금 자도 ${durText(baseSleep)}입니다. 30분을 더 미루면 손해가 바로 커집니다.`; }
-      else if (baseSleep >= 540) { title = '수면 시간은 충분한 상태'; cls = 'good'; summary = `지금 자면 ${durText(baseSleep)}이라 수면량은 충분합니다. 핵심은 정해진 시간에 실제로 일어나는 것입니다.`; }
-      if (alcohol === 'yes') { title = '음주 후 기상 안정성 주의'; cls = baseSleep < 360 ? 'bad' : 'warn'; summary += ' 술을 마신 날은 잠든 시간보다 수면 질과 알람 성공률이 흔들릴 수 있습니다.'; }
-      if (nap === 'late') { title = '늦은 낮잠 영향 가능 상태'; cls = 'warn'; summary += ' 오후 늦은 낮잠 때문에 바로 잠들기 어려울 수 있습니다.'; }
-      if (importance === 'critical' && baseSleep < 420) { title = '무조건 기상 우선 상태'; cls = baseSleep < 300 ? 'bad' : 'warn'; summary = `내일은 늦으면 안 되는 상황입니다. 컨디션보다 ${fmt(mustWake)} 기상 성공을 우선으로 잡아야 합니다.`; }
-
+      const sleep = duration(bed, mustWake);
+      const risk = riskBySleep(sleep, importance);
+      const alarmBuffer = importance === 'critical' ? 20 : importance === 'important' ? 15 : 10;
       const finalWake = importance === 'normal' ? mustWake + 20 : importance === 'important' ? mustWake + 10 : mustWake;
+
+      let title = mode === 'bedtime' ? '곧 잘 예정인 상태' : '미리 수면 계획을 세우는 상태';
+      let cls = risk.cls;
+      let summary = mode === 'bedtime'
+        ? `계획대로 ${fmt(bed)}에 자면 ${durText(sleep)}을 확보합니다.`
+        : `${fmt(bed)} 취침을 기준으로 잡으면 ${durText(sleep)}을 확보합니다. 아직 잘 시간이 아니라면 이 시간까지 리듬을 더 밀지 않는 것이 핵심입니다.`;
+
+      if (sleep < 270) { title = '수면 시간이 많이 부족한 상태'; cls = 'bad'; summary = `${fmt(bed)}에 자도 ${durText(sleep)}입니다. 내일은 개운함보다 기상 성공을 우선으로 잡아야 합니다.`; }
+      else if (sleep < 360) { title = '내일 아침 컨디션 주의 상태'; cls = 'warn'; summary = `${fmt(bed)}에 자도 ${durText(sleep)}입니다. 취침이 더 밀리면 알람 실패 가능성이 커집니다.`; }
+      else if (sleep >= 540) { title = '수면 시간은 충분한 상태'; cls = 'good'; summary = `${fmt(bed)} 취침이면 ${durText(sleep)}이라 수면량은 충분합니다. 핵심은 ${fmt(mustWake)}에 실제로 침대 밖으로 나오는 것입니다.`; }
+      if (importance === 'critical' && sleep < 420) { title = '무조건 기상 우선 상태'; cls = sleep < 300 ? 'bad' : 'warn'; summary = `내일은 늦으면 안 되는 상황입니다. 컨디션보다 ${fmt(mustWake)} 기상 성공을 우선으로 잡아야 합니다.`; }
+      if (alcohol === 'yes') { title = '음주 후 기상 안정성 주의'; cls = sleep < 360 ? 'bad' : 'warn'; summary += ' 술을 마신 날은 잠든 시간보다 알람 성공률이 흔들릴 수 있습니다.'; }
+      if (nap === 'late') { title = '늦은 낮잠 영향 가능 상태'; cls = 'warn'; summary += ' 오후 늦은 낮잠 때문에 계획한 취침 시간에 바로 잠들기 어려울 수 있습니다.'; }
+
       let napGuide = '가능하면 생략';
-      if (baseSleep < 360 || debt === 'heavy') napGuide = '15시 전 15~20분만 허용';
+      if (sleep < 360 || debt === 'heavy') napGuide = '15시 전 15~20분만 허용';
       if (nap === 'late') napGuide = '내일 낮잠은 더 짧게. 15시 이후는 피하기';
-      if (baseSleep >= 480) napGuide = '가급적 안 자기';
+      if (sleep >= 480) napGuide = '가급적 안 자기';
 
       let caffeineGuide = '내일은 기상 후 60~90분 뒤 첫 카페인 권장';
       let caffeineNote = '';
       if (caffeine !== null) {
         const cToBed = duration(caffeine, bed);
-        if (cToBed < 480) caffeineNote = `마지막 카페인이 취침 ${durText(cToBed)} 전이라 잠드는 시간이 밀릴 수 있습니다.`;
-        else caffeineNote = '카페인 시간은 크게 문제되지 않는 편입니다.';
+        caffeineNote = cToBed < 480
+          ? `마지막 카페인이 취침 ${durText(cToBed)} 전이라 잠드는 시간이 밀릴 수 있습니다.`
+          : '카페인 시간은 크게 문제되지 않는 편입니다.';
       }
 
       const points = [];
-      if (baseSleep < 300) points.push(`지금 목표는 개운함이 아니라 ${fmt(mustWake)} 기상 성공입니다. 알람을 손이 닿지 않는 곳에 두는 편이 낫습니다.`);
-      else points.push(`지금 바로 누우면 ${durText(baseSleep)}을 확보합니다. 30분을 미루면 단순히 늦게 자는 게 아니라 알람 실패 여유가 줄어듭니다.`);
-      if (importance === 'critical') points.push(`최후 기상선은 ${fmt(finalWake)}입니다. 이 시간 이후로 미루면 일정 리스크가 커집니다.`);
-      else points.push(`최후 기상선은 ${fmt(finalWake)}입니다. 늦어도 이 시간에는 침대 밖으로 나오는 기준으로 잡으세요.`);
-      if (alcohol === 'yes') points.push('음주 후에는 중간 각성이나 늦잠 가능성이 있어, 알람을 1개가 아니라 3단계로 나누는 쪽이 낫습니다.');
-      else if (nap === 'long' || nap === 'late') points.push('오늘 낮잠 영향이 있을 수 있으니, 잠이 안 와도 취침 시각을 더 미루는 선택은 손해가 큽니다.');
-      else if (wakeGapFromMorning > 1080) points.push('오늘 깨어 있던 시간이 길어서 잠들 가능성은 높지만, 내일 오전 멍함은 남을 수 있습니다.');
+      if (mode === 'planning') {
+        points.push(`지금 당장 잘 필요는 없습니다. 대신 오늘 취침 기준을 ${fmt(bed)}로 고정하고, 그 이후로 밀리지 않는 것이 핵심입니다.`);
+        points.push(`${fmt(bed)}보다 30분 이상 늦어질 것 같으면, 알람을 더 늘리기보다 내일 낮잠 기준을 짧게 잡아야 합니다.`);
+      } else {
+        points.push(`곧 잘 예정이면 준비를 줄이고 ${fmt(bed)} 취침을 우선하세요. 지금부터는 계획을 바꾸는 것보다 실행이 중요합니다.`);
+      }
+      if (sleep < 300) points.push(`확보 수면이 짧습니다. 목표는 개운함이 아니라 ${fmt(mustWake)}에 침대 밖으로 나오는 것입니다.`);
+      else points.push(`${fmt(mustWake)} 기상 기준으로 알람은 ${fmt(mustWake - alarmBuffer)} / ${fmt(mustWake)} / ${fmt(mustWake + 10)}가 적당합니다.`);
+      if (importance === 'critical') points.push(`최후 기상선은 ${fmt(finalWake)}입니다. 이 시간 이후는 일정 리스크가 커집니다.`);
+      if (alcohol === 'yes') points.push('음주 후에는 알람 1개만 믿기보다 3단계로 나누는 편이 낫습니다.');
+      else if (nap === 'long' || nap === 'late') points.push('오늘 낮잠 영향이 있을 수 있으니, 계획 취침이 밀릴 가능성을 미리 잡아야 합니다.');
       else points.push('기상 후 30분 안에 밝은 빛을 보면 다시 눕는 흐름을 끊는 데 도움이 됩니다.');
       if (caffeineNote) points.push(caffeineNote);
 
+      const actionSteps = mode === 'planning'
+        ? [
+          `${fmt(bed)} 취침을 오늘 기준선으로 정하세요.`,
+          `취침 1시간 전부터는 새 일을 시작하지 않는 쪽이 좋습니다.`,
+          `${fmt(mustWake - alarmBuffer)} / ${fmt(mustWake)} / ${fmt(mustWake + 10)} 알람을 미리 맞춰두세요.`,
+          `내일 최후 기상선은 ${fmt(finalWake)}입니다.`,
+          `아침에는 실제 기상시간과 멍함 점수만 체크하면 됩니다.`
+        ]
+        : [
+          `${fmt(mustWake - alarmBuffer)} / ${fmt(mustWake)} / ${fmt(mustWake + 10)} 알람을 먼저 맞추세요.`,
+          `휴대폰은 침대에서 바로 끄기 어려운 위치에 두세요.`,
+          `기상 후 바로 할 행동을 하나만 정하세요.`,
+          `지금부터 취침 시간을 더 늦추지 마세요.`,
+          `내일 아침 실제 기상시간과 멍함 점수만 체크하세요.`
+        ];
+
       const morningCheck = [
         `실제 기상시간이 ${fmt(mustWake)}보다 몇 분 늦었는지`,
-        '알람 1번에 일어났는지, 2~3번 밀렸는지',
+        '알람을 몇 번 미루고 일어났는지',
         '기상 후 10분 멍함 정도를 1~5점으로 기록'
       ];
 
-      return { bed, mustWake, todayWake, importance, nap, alcohol, debt, caffeine, baseSleep, title, cls, summary, s0, s30, s60, finalWake: fmt(finalWake), napGuide, caffeineGuide, points, morningCheck };
+      return { mode, bed, mustWake, todayWake, importance, nap, alcohol, debt, caffeine, sleep, risk, alarmBuffer, title, cls, summary, finalWake: fmt(finalWake), napGuide, caffeineGuide, points, actionSteps, morningCheck };
     }
 
     function render(plan) {
@@ -408,33 +404,25 @@
           <p>${plan.summary}</p>
         </div>
         <div class="result-list">
-          <div class="result-item"><span>지금 자면</span><strong>${plan.s0.wake} 기상 · ${plan.s0.sleepText} 수면</strong></div>
-          <div class="result-item"><span>알람 후보</span><strong>${plan.s0.alarms}</strong></div>
+          <div class="result-item"><span>오늘 취침 기준</span><strong>${fmt(plan.bed)}</strong></div>
+          <div class="result-item"><span>목표 기상</span><strong>${fmt(plan.mustWake)} · ${durText(plan.sleep)} 수면</strong></div>
+          <div class="result-item"><span>알람 후보</span><strong>${fmt(plan.mustWake - plan.alarmBuffer)} / ${fmt(plan.mustWake)} / ${fmt(plan.mustWake + 10)}</strong></div>
           <div class="result-item"><span>최후 기상선</span><strong>${plan.finalWake}</strong></div>
           <div class="result-item"><span>내일 낮잠</span><strong>${plan.napGuide}</strong></div>
-          <div class="result-item"><span>카페인</span><strong>${plan.caffeineGuide}</strong></div>
         </div>
         <div class="guide">
-          <h4>지금 조정 포인트</h4>
+          <h4>${plan.mode === 'planning' ? '오늘 밤까지 실행 순서' : '지금 바로 실행 순서'}</h4>
+          <ul>${plan.actionSteps.map(p => `<li>${p}</li>`).join('')}</ul>
+        </div>
+        <div class="guide">
+          <h4>조정 포인트</h4>
           <ul>${plan.points.map(p => `<li>${p}</li>`).join('')}</ul>
-        </div>
-        <div class="guide">
-          <h4>지금 vs 미뤘을 때 비교</h4>
-          <div class="compare-grid">
-            ${[plan.s0, plan.s30, plan.s60].map(s => `
-              <div class="compare-row">
-                <div class="top"><span>${s.label}</span><span class="tag ${s.risk.cls}">${s.risk.label}</span></div>
-                <div><strong>${s.wake} 기상 · ${s.sleepText} 수면</strong></div>
-                <div class="desc">${s.change} ${s.risk.text}</div>
-              </div>
-            `).join('')}
-          </div>
         </div>
         <div class="guide">
           <h4>기상 시 체크할 것</h4>
           <ul>${plan.morningCheck.map(p => `<li>${p}</li>`).join('')}</ul>
-          <p class="hint">이 3개를 다시 입력하면 “더 당겨도 되는지 / 하루 더 유지해야 하는지”가 달라집니다.</p>
-          <div class="actions"><button class="secondary mini-btn" type="button" id="openMorningBtn">아침 체크 입력</button></div>
+          <p class="hint">아침에 실제 기상시간과 멍함 점수를 넣으면, 오늘 밤 기준을 유지할지 다시 계산합니다.</p>
+          <div class="actions"><button class="secondary mini-btn" type="button" id="openMorningBtn">기상 결과 입력</button></div>
           <div id="morningBox" style="display:none; margin-top:12px;">
             <div class="form-grid">
               <div><label for="actualWake">실제 기상시간</label><input class="time-text" id="actualWake" inputmode="numeric" placeholder="예: 08:20"></div>
@@ -453,21 +441,21 @@
       if (!latestPlan) return;
       const actual = parseTime($('actualWake').value);
       const score = Number($('wakeScore').value);
-      if (actual === null) { alert('실제 기상시간을 입력해 주세요.'); return; }
+      if (actual === null) { alert('실제 기상시간을 24시간 기준으로 입력해 주세요.'); return; }
       let gap = actual - latestPlan.mustWake;
       if (gap > 720) gap -= 1440;
       if (gap < -720) gap += 1440;
       let msg = '';
       if (gap <= 10 && score <= 3) msg = '계획 성공입니다. 오늘 밤은 기상 시간을 더 당기기보다 같은 시간에 한 번 더 고정하는 편이 안정적입니다.';
       else if (gap <= 30) msg = '큰 실패는 아닙니다. 오늘 밤은 취침을 무리하게 앞당기지 말고, 같은 기상 시간을 다시 시도하는 편이 낫습니다.';
-      else msg = '계획보다 많이 밀렸습니다. 오늘은 기상 목표를 더 당기지 말고, 실패한 시간 기준으로 다시 계산하는 편이 낫습니다.';
+      else msg = '계획보다 많이 밀렸습니다. 오늘은 목표를 더 당기지 말고, 실제 기상시간 기준으로 다시 계산하는 편이 낫습니다.';
       if (score >= 4) msg += ' 아침 멍함 점수가 높으므로 낮잠은 15시 전 20분 안쪽으로 제한하세요.';
       $('morningResult').innerHTML = `<div class="guide"><strong>기상 체크 결과</strong><br>${msg}</div>`;
     }
 
     function savePlan() {
       if (!latestPlan) { alert('먼저 계산을 해주세요.'); return; }
-      const item = { t: new Date().toLocaleString('ko-KR'), bed: latestPlan.s0.bed, wake: latestPlan.s0.wake, sleep: latestPlan.s0.sleepText, title: latestPlan.title };
+      const item = { t: new Date().toLocaleString('ko-KR'), bed: fmt(latestPlan.bed), wake: fmt(latestPlan.mustWake), sleep: durText(latestPlan.sleep), title: latestPlan.title };
       const arr = JSON.parse(localStorage.getItem('rhythm_logs') || '[]');
       arr.unshift(item);
       localStorage.setItem('rhythm_logs', JSON.stringify(arr.slice(0, 8)));
@@ -476,19 +464,20 @@
 
     function renderSaved() {
       const arr = JSON.parse(localStorage.getItem('rhythm_logs') || '[]');
-      if (!arr.length) { savedList.innerHTML = '<p class="hint">저장된 기록이 없습니다.</p>'; return; }
-      savedList.innerHTML = arr.map(x => `<div class="saved-item"><span>${x.t}<br><strong>${x.title}</strong></span><span>${x.wake} · ${x.sleep}</span></div>`).join('');
+      if (!arr.length) { $('savedList').innerHTML = '<p class="hint">저장된 기록이 없습니다.</p>'; return; }
+      $('savedList').innerHTML = arr.map(x => `<div class="saved-item"><span>${x.t}<br><strong>${x.title}</strong></span><span>${x.wake} · ${x.sleep}</span></div>`).join('');
     }
 
     function makePrompt() {
       if (!latestPlan) { alert('먼저 계산을 해주세요.'); return; }
-      const prompt = `너는 수면 리듬 관리 코치입니다. 의학적 진단처럼 말하지 말고 생활 리듬 조정 관점으로만 답해주세요.\n\n[사용자 입력]\n- 지금 자려는 시간: ${fmt(latestPlan.bed)}\n- 내일 꼭 일어날 시간: ${fmt(latestPlan.mustWake)}\n- 오늘 일어난 시간: ${fmt(latestPlan.todayWake)}\n- 내일 기상 중요도: ${latestPlan.importance}\n- 오늘 낮잠: ${latestPlan.nap}\n- 술: ${latestPlan.alcohol}\n- 최근 3일 수면부족: ${latestPlan.debt}\n\n[계산 결과]\n- 현재 상태: ${latestPlan.title}\n- 지금 자면: ${latestPlan.s0.wake} 기상, ${latestPlan.s0.sleepText} 수면\n- 30분 뒤 자면: ${latestPlan.s30.wake} 기상, ${latestPlan.s30.sleepText} 수면\n- 1시간 뒤 자면: ${latestPlan.s60.wake} 기상, ${latestPlan.s60.sleepText} 수면\n- 알람 후보: ${latestPlan.s0.alarms}\n- 최후 기상선: ${latestPlan.finalWake}\n\n[요청]\n1. 지금 바로 잘 때 실행 순서를 5줄로 정리해주세요.\n2. 30분 미루면 실제로 무엇이 손해인지 설명해주세요.\n3. 내일 아침 알람 실패를 줄이는 기준을 알려주세요.\n4. 기상 후 체크할 3가지를 알려주세요.\n5. 내일 밤 다시 리듬이 밀리지 않게 할 기준을 알려주세요.\n\n말투는 간결하고 현실적으로 해주세요.`;
+      const modeText = latestPlan.mode === 'planning' ? '수면 직전이 아니라 미리 계획 중' : '곧 잘 예정';
+      const prompt = `너는 수면 리듬 관리 코치입니다. 의학적 진단처럼 말하지 말고 생활 리듬 조정 관점으로만 답해주세요.\n\n[사용자 상황]\n- 사용 상황: ${modeText}\n- 오늘 잘 예정 시간: ${fmt(latestPlan.bed)}\n- 내일 꼭 일어날 시간: ${fmt(latestPlan.mustWake)}\n- 오늘 일어난 시간: ${fmt(latestPlan.todayWake)}\n- 내일 기상 중요도: ${latestPlan.importance}\n- 오늘 낮잠: ${latestPlan.nap}\n- 술: ${latestPlan.alcohol}\n- 최근 3일 수면부족: ${latestPlan.debt}\n\n[계산 결과]\n- 현재 상태: ${latestPlan.title}\n- 확보 수면: ${durText(latestPlan.sleep)}\n- 알람 후보: ${fmt(latestPlan.mustWake - latestPlan.alarmBuffer)} / ${fmt(latestPlan.mustWake)} / ${fmt(latestPlan.mustWake + 10)}\n- 최후 기상선: ${latestPlan.finalWake}\n- 내일 낮잠 기준: ${latestPlan.napGuide}\n\n[요청]\n1. ${latestPlan.mode === 'planning' ? '오늘 밤까지 실행 순서' : '지금 바로 잘 때 실행 순서'}를 5줄로 정리해주세요.\n2. 알람 실패를 줄이는 기준을 알려주세요.\n3. 기상 후 체크할 3가지를 알려주세요.\n4. 내일 밤 다시 리듬이 밀리지 않게 할 기준을 알려주세요.\n5. 무리한 조언 말고 현실적으로 가능한 기준만 말해주세요.\n\n말투는 간결하고 현실적으로 해주세요.`;
       $('promptBlock').style.display = 'block';
       $('aiPrompt').value = prompt;
     }
 
     form.addEventListener('submit', (e) => { e.preventDefault(); const plan = buildPlan(); if (plan) render(plan); });
-    $('resetBtn').addEventListener('click', () => { form.reset(); $('bedTime').value='02:30'; $('mustWake').value='08:00'; $('todayWake').value='10:30'; resultContent.style.display='none'; placeholder.style.display='flex'; latestPlan=null; });
+    $('resetBtn').addEventListener('click', () => { form.reset(); $('usageMode').value='planning'; $('bedTime').value='00:00'; $('mustWake').value='08:00'; $('todayWake').value='10:30'; resultContent.style.display='none'; placeholder.style.display='flex'; latestPlan=null; });
     $('savePlanBtn').addEventListener('click', savePlan);
     $('clearSavedBtn').addEventListener('click', () => { localStorage.removeItem('rhythm_logs'); renderSaved(); });
     $('makePromptBtn').addEventListener('click', makePrompt);
